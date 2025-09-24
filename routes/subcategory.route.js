@@ -13,18 +13,31 @@ const {
   getSpecificSubCategory,
   createFilterObj,
   setCategoryIdToBody,
+  uploadSubcategoryImage,
+  imageProcessing,
 } = require("../services/subcategory.service");
 // mergeParams to get access to params from parent router (category)
-const router = express.Router({mergeParams: true});
+const router = express.Router({ mergeParams: true });
 
 router
   .route("/")
-  .get(createFilterObj,getAllSubCategories)
-  .post(setCategoryIdToBody,createSubCategoryValidator, createSubCategory);
+  .get(createFilterObj, getAllSubCategories)
+  .post(
+    uploadSubcategoryImage,
+    imageProcessing,
+    setCategoryIdToBody,
+    createSubCategoryValidator,
+    createSubCategory
+  );
 
 router
   .route("/:id")
   .get(getSpecificSubCategoryValidator, getSpecificSubCategory)
-  .put(updateSubCategoryValidator, updateSubCategory)
+  .put(
+    uploadSubcategoryImage,
+    imageProcessing,
+    updateSubCategoryValidator,
+    updateSubCategory
+  )
   .delete(deleteSubCategoryValidator, deleteSubCategory);
 module.exports = router;

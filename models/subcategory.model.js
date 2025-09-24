@@ -15,6 +15,7 @@ const subCategorySchema = new mongoose.Schema(
       type: String,
       lowercase: true,
     },
+    image: String,
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
@@ -31,6 +32,22 @@ subCategorySchema.pre(/^find/, function (next) {
     select: "name -_id",
   });
   next();
+});
+
+// post middleware
+const setImageUrl = (doc) => {
+  if (doc.image) {
+    const imageUrl = `${process.env.BASE_URL}/subcategories/${doc.image}`;
+    doc.image = imageUrl;
+  }
+};
+
+subCategorySchema.post("init", (doc) => {
+  setImageUrl(doc);
+});
+
+subCategorySchema.post("save", (doc) => {
+  setImageUrl(doc);
 });
 
 const SubCategoryModel = mongoose.model("Subcategory", subCategorySchema);

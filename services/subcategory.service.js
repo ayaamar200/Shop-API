@@ -1,3 +1,7 @@
+const asyncHandler = require("express-async-handler");
+const sharp = require("sharp");
+
+const { uploadSingleFile } = require("../middlewares/upload-file.middleware");
 const SubCategoryModel = require("../models/subcategory.model");
 const {
   deleteOne,
@@ -6,6 +10,29 @@ const {
   getOne,
   getAll,
 } = require("./handler-factory");
+
+// upload single image
+exports.uploadSubcategoryImage = uploadSingleFile("image");
+
+// image processing
+exports.imageProcessing = asyncHandler(async (req, res, next) => {
+  if (!req.file) return next();
+  const fileName = `subcategory-${req.file.originalname.split(".")[0]}.jpeg`;
+  await sharp(req.file.buffer)
+    .resize({
+      width: 400,
+      height: 400,
+    })
+    .toFormat("jpeg")
+    .jpeg({ quality: 80 })
+    .toFile(`uploads/subcategories/${fileName}`);
+
+  // save image to database
+  req.body.image = fileName;
+  next();
+});
+{
+}
 
 // @desc Nested Route
 // @route POST /api/v1/categories/:categoryId/subcategories
