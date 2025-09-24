@@ -2,6 +2,7 @@ const path = require("path");
 
 // Required External Modules
 const express = require("express");
+const cors = require("cors");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
 
@@ -21,6 +22,14 @@ dbConnection();
 
 // App Configuration
 const app = express();
+app.use(cors()); // Enable CORS
+// app.use(
+//   cors({
+//     origin: "*",
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     credentials: true,
+//   })
+// ); // Allow all origins
 
 // Middlewares
 // parse JSON Request Bodies
