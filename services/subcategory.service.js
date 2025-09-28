@@ -20,8 +20,8 @@ exports.imageProcessing = asyncHandler(async (req, res, next) => {
   const fileName = `subcategory-${req.file.originalname.split(".")[0]}.jpeg`;
   await sharp(req.file.buffer)
     .resize({
-      width: 400,
-      height: 400,
+      width: 200,
+      height: 200,
     })
     .toFormat("jpeg")
     .jpeg({ quality: 80 })
