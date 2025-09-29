@@ -52,23 +52,18 @@ exports.createProductValidator = [
     .isLength({ max: 32 })
     .withMessage("Product price must not exceed 32 characters"),
 
-  check("priceAfterDiscount")
-    .optional()
-    .isFloat({ min: 0 })
-    .withMessage("Product price after discount must be a non-negative number")
-    .custom((val, { req }) => {
-      if (val >= req.body.price) {
-        throw new Error(
-          "Price after discount must be less than the original price"
-        );
-      }
-      return true;
-    }),
-
-  check("colors")
-    .optional()
-    .isArray()
-    .withMessage("Colors must be an array of strings"),
+  // check("priceAfterDiscount")
+  //   .optional()
+  //   .isFloat({ min: 0 })
+  //   .withMessage("Product price after discount must be a non-negative number")
+  //   .custom((val, { req }) => {
+  //     if (val >= req.body.price) {
+  //       throw new Error(
+  //         "Price after discount must be less than the original price"
+  //       );
+  //     }
+  //     return true;
+  //   }),
 
   check("imageCover").notEmpty().withMessage("Product image cover is required"),
 
@@ -92,7 +87,6 @@ exports.createProductValidator = [
 
   check("subcategories")
     .optional()
-    .isArray()
     .isMongoId()
     .withMessage("Invalid Subcategory ID format")
     .custom(async (subcategories, { req }) => {

@@ -1,5 +1,3 @@
-const multer = require("multer");
-const ApiError = require("../utils/api-error");
 const asyncHandler = require("express-async-handler");
 const sharp = require("sharp");
 
@@ -11,31 +9,19 @@ const {
   createOne,
   getAll,
 } = require("./handler-factory");
-
-const storage = multer.memoryStorage();
-
-const fileFilter = function (req, file, cb) {
-  if (file.mimetype.startsWith("image")) {
-    cb(null, true);
-  } else {
-    cb(new ApiError("Only images are allowed", 400), false);
-  }
-};
-
-const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-});
+const {
+  uploadMultipleFiles,
+} = require("../middlewares/upload-file.middleware");
 
 // upload Multiple images
-exports.uploadProductImage = upload.fields([
+exports.uploadProductImage = uploadMultipleFiles([
   {
     name: "imageCover",
     maxCount: 1,
   },
   {
     name: "images",
-    maxCount: 5,
+    maxCount: 3,
   },
 ]);
 
@@ -48,8 +34,8 @@ exports.imageProcessing = asyncHandler(async (req, res, next) => {
     }-cover.jpeg`;
     await sharp(req.files.imageCover[0].buffer)
       .resize({
-        width: 400,
-        height: 400,
+        width: 2000,
+        height: 2000,
       })
       .toFormat("jpeg")
       .jpeg({ quality: 80 })
@@ -70,8 +56,8 @@ exports.imageProcessing = asyncHandler(async (req, res, next) => {
         }.jpeg`;
         await sharp(img.buffer)
           .resize({
-            width: 400,
-            height: 400,
+            width: 2000,
+            height: 2000,
           })
           .toFormat("jpeg")
           .jpeg({ quality: 80 })

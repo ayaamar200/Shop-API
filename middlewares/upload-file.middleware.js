@@ -1,11 +1,11 @@
 const multer = require("multer");
 const ApiError = require("../utils/api-error");
 
-exports.uploadSingleFile = (fieldName) => {
+const multerOptions = () => {
   // Memory Storage engine
-  const storage = multer.memoryStorage();
+  const multerStorage = multer.memoryStorage();
 
-  const fileFilter = function (req, file, cb) {
+  const multerFilter = function (req, file, cb) {
     if (file.mimetype.startsWith("image")) {
       cb(null, true);
     } else {
@@ -14,9 +14,14 @@ exports.uploadSingleFile = (fieldName) => {
   };
 
   const upload = multer({
-    storage: storage,
-    fileFilter: fileFilter,
+    storage: multerStorage,
+    fileFilter: multerFilter,
   });
 
-  return upload.single(fieldName);
+  return upload;
 };
+
+exports.uploadSingleFile = (fieldName) => multerOptions().single(fieldName);
+
+exports.uploadMultipleFiles = (arrayOfFields) =>
+  multerOptions().fields(arrayOfFields);

@@ -36,12 +36,11 @@ const productSchema = new mongoose.Schema(
       min: [0, "Product price must be at least 0"],
       max: [2000000, "Product price must be at most 2,000,000"],
     },
-    priceAfterDiscount: {
-      type: Number,
-      min: [0, "Product price after discount must be at least 0"],
-      max: [2000000, "Product price after discount must be at most 2,000,000"],
-    },
-    colors: [String],
+    // priceAfterDiscount: {
+    //   type: Number,
+    //   min: [0, "Product price after discount must be at least 0"],
+    //   max: [2000000, "Product price after discount must be at most 2,000,000"],
+    // },
     imageCover: {
       type: String,
       required: [true, "Product image cover is required"],
