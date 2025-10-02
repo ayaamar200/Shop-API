@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import bcrypt from "bcrypt";
 const userSchema = new Schema(
   {
     username: {
@@ -46,7 +47,14 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-// post middleware
+userSchema.pre("save", async function (next) {
+  // Hashing User Password
+  if (!this.isModified("password")) return next();
+
+  this.password = await bcrypt.hash(this.password, 12);
+
+  next();
+});
 const setImageUrl = (doc) => {
   if (doc.profileImage) {
     const profileImageUrl = `${process.env.BASE_URL}/brands/${doc.profileImage}`;

@@ -1,15 +1,11 @@
 import asyncHandler from "express-async-handler";
 import sharp from "sharp";
+import bcrypt from "bcrypt";
 
 import { uploadSingleFile } from "../middlewares/upload-file.middleware.js";
 import UserModel from "../models/user.model.js";
-import {
-  deleteOne,
-  updateOne,
-  createOne,
-  getOne,
-  getAll,
-} from "./handler-factory.js";
+import { deleteOne, createOne, getOne, getAll } from "./handler-factory.js";
+import ApiError from "../utils/api-error.js";
 
 export const uploadUserImage = uploadSingleFile("profileImage");
 
@@ -34,9 +30,72 @@ export const imageProcessing = asyncHandler(async (req, res, next) => {
 
 export const createUser = createOne(UserModel, "User");
 
-export const updateUser = updateOne(UserModel, "User");
+export const updateUser = asyncHandler(async (req, res, next) => {
+  const user = await UserModel.findByIdAndUpdate(
+    req.params.id,
+    {
+      name: req.body.name,
+      slug: req.body.slug,
+      email: req.body.email,
+      role: req.body.role,
+      phone: req.body.phone,
+      profileImage: req.body.profileImage,
+    },
+    {
+      new: true,
+    }
+  );
+  if (!user) {
+    return next(new ApiError(`User Not Found for This id ${id}`, 404));
+  }
+  res.status(200).json({
+    status: "success",
+    msg: `User Updated Successfully`,
+    data: user,
+  });
+});
+
+export const changeUserPassword = asyncHandler(async (req, res, next) => {
+  const user = await UserModel.findByIdAndUpdate(
+    req.params.id,
+    {
+      newPassword: await bcrypt.hash(req.body.newPassword, 12),
+    },
+    {
+      new: true,
+    }
+  );
+  if (!user) {
+    return next(new ApiError(`User Not Found for This id ${id}`, 404));
+  }
+  res.status(200).json({
+    status: "success",
+    msg: `User Updated Successfully`,
+    data: user,
+  });
+});
 
 export const deleteUser = deleteOne(UserModel, "User");
+
+export const deactivateUser = asyncHandler(async (req, res, next) => {
+  const user = await UserModel.findByIdAndUpdate(
+    req.params.id,
+    {
+      isActive: false,
+    },
+    {
+      new: true,
+    }
+  );
+  if (!user) {
+    return next(new ApiError(`User Not Found for This id ${id}`, 404));
+  }
+  res.status(200).json({
+    status: "success",
+    msg: `User Deactivated Successfully`,
+    data: user,
+  });
+});
 
 export const getAllUsers = getAll(UserModel, "User");
 

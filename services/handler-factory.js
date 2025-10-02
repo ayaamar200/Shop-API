@@ -16,26 +16,6 @@ export function deleteOne(Model, field) {
   });
 }
 
-// export function deactivateOne(Model, field) {
-//   return asyncHandler(async (req, res) => {
-//     const { id } = req.params;
-
-//     const document = await Model.findByIdAndUpdate(
-//       id,
-//       { isActive: false },
-//       { new: true }
-//     );
-//     if (!document) {
-//       return next(new ApiError(`${field} Not Found for This id ${id}`, 404));
-//     }
-//     res.status(200).json({
-//       status: "success",
-//       msg: `${field} Deactivated Successfully`,
-//       data: document,
-//     });
-//   });
-// }
-
 export function updateOne(Model, field) {
   return asyncHandler(async (req, res, next) => {
     const document = await Model.findByIdAndUpdate(req.params.id, req.body, {

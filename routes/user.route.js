@@ -6,12 +6,23 @@ import {
   createUser,
   updateUser,
   deleteUser,
+  deactivateUser,
+  changeUserPassword,
   uploadUserImage,
   imageProcessing,
 } from "../services/user.service.js";
-import { createUserValidator, deleteUserValidator, getSpecificUserValidator, updateUserValidator } from "../utils/validators/user.validator.js";
+import {
+  createUserValidator,
+  deleteUserValidator,
+  getSpecificUserValidator,
+  updateUserValidator,
+  changeUserPasswordValidator,
+  deactivateUserValidator,
+} from "../utils/validators/user.validator.js";
 const router = Router();
 
+router.put("/changPassword/:id",changeUserPasswordValidator, changeUserPassword);
+router.patch("/deactivate/:id", deactivateUserValidator,deactivateUser);
 router
   .route("/")
   .get(getAllUsers)
