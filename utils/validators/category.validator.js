@@ -1,8 +1,8 @@
-const { check } = require("express-validator");
-const validatorMiddleware = require("../../middlewares/validator.middleware");
-const slugify = require("slugify");
+import { check } from "express-validator";
+import validatorMiddleware from "../../middlewares/validator.middleware.js";
+import slugify from "slugify";
 
-exports.getSpecificCategoryValidator = [
+export const getSpecificCategoryValidator = [
   check("id")
     .notEmpty()
     .withMessage("Brand id is required")
@@ -11,7 +11,7 @@ exports.getSpecificCategoryValidator = [
   validatorMiddleware,
 ];
 
-exports.createCategoryValidator = [
+export const createCategoryValidator = [
   check("name")
     .notEmpty()
     .withMessage("Category name is required")
@@ -21,10 +21,11 @@ exports.createCategoryValidator = [
       req.body.slug = slugify(val);
       return true;
     }),
+  check("image").optional(),
   validatorMiddleware,
 ];
 
-exports.updateCategoryValidator = [
+export const updateCategoryValidator = [
   check("id")
     .notEmpty()
     .withMessage("Brand id is required")
@@ -41,7 +42,7 @@ exports.updateCategoryValidator = [
   validatorMiddleware,
 ];
 
-exports.deleteCategoryValidator = [
+export const deleteCategoryValidator = [
   check("id")
     .notEmpty()
     .withMessage("Brand id is required")

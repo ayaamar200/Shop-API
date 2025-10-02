@@ -1,13 +1,12 @@
 
 // @desc   Database connection setup using Mongoose
-const mongoose = require("mongoose"); 
+import { connect } from "mongoose"; 
 const dbConnection = () => {
-  mongoose
-    .connect(process.env.DB_URI)
+  connect(process.env.DB_URI)
     .then((conn) => {
       console.log(`Database Connected: ${conn.connection.host}`);
     })
 
 };
 
-module.exports = dbConnection;
+export default dbConnection;

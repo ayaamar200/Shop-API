@@ -1,12 +1,12 @@
 // @desc   Routes for product-related endpoints
-const express = require("express");
-const {
+import { Router } from "express";
+import {
   getSpecificProductValidator,
   createProductValidator,
   updateProductValidator,
   deleteProductValidator,
-} = require("../utils/validators/product.validator");
-const {
+} from "../utils/validators/product.validator.js";
+import {
   getAllProducts,
   getSpecificProduct,
   createProduct,
@@ -14,8 +14,8 @@ const {
   deleteProduct,
   uploadProductImage,
   imageProcessing,
-} = require("../services/product.service");
-const router = express.Router();
+} from "../services/product.service.js";
+const router = Router();
 
 router
   .route("/")
@@ -37,4 +37,4 @@ router
   )
   .delete(deleteProductValidator, deleteProduct);
 
-module.exports = router;
+export default router;

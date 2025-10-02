@@ -1,9 +1,9 @@
-const { check } = require("express-validator");
-const validatorMiddleware = require("../../middlewares/validator.middleware");
-const CategoryModel = require("../../models/category.model");
-const slugify = require("slugify");
+import { check } from "express-validator";
+import validatorMiddleware from "../../middlewares/validator.middleware.js";
+import CategoryModel from "../../models/category.model.js";
+import slugify from "slugify";
 
-exports.getSpecificSubCategoryValidator = [
+export const getSpecificSubCategoryValidator = [
   check("id")
     .notEmpty()
     .withMessage("Brand id is required")
@@ -12,7 +12,7 @@ exports.getSpecificSubCategoryValidator = [
   validatorMiddleware,
 ];
 
-exports.createSubCategoryValidator = [
+export const createSubCategoryValidator = [
   check("name")
     .notEmpty()
     .withMessage("SubCategory name is required")
@@ -34,11 +34,12 @@ exports.createSubCategoryValidator = [
       }
       return true;
     }),
+  check("image").optional(),
 
   validatorMiddleware,
 ];
 
-exports.updateSubCategoryValidator = [
+export const updateSubCategoryValidator = [
   check("id")
     .notEmpty()
     .withMessage("Brand id is required")
@@ -67,7 +68,7 @@ exports.updateSubCategoryValidator = [
   validatorMiddleware,
 ];
 
-exports.deleteSubCategoryValidator = [
+export const deleteSubCategoryValidator = [
   check("id")
     .notEmpty()
     .withMessage("Brand id is required")

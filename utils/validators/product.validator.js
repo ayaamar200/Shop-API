@@ -1,12 +1,12 @@
-const { check } = require("express-validator");
-const validatorMiddleware = require("../../middlewares/validator.middleware");
+import { check } from "express-validator";
 
-const slugify = require("slugify");
-const CategoryModel = require("../../models/category.model");
-const SubCategoryModel = require("../../models/subcategory.model");
-const BrandModel = require("../../models/brand.model");
+import slugify from "slugify";
+import CategoryModel from "../../models/category.model.js";
+import SubCategoryModel from "../../models/subcategory.model.js";
+import BrandModel from "../../models/brand.model.js";
+import validatorMiddleware from "../../middlewares/validator.middleware.js";
 
-exports.getSpecificProductValidator = [
+export const getSpecificProductValidator = [
   check("id")
     .notEmpty()
     .withMessage("Brand id is required")
@@ -15,7 +15,7 @@ exports.getSpecificProductValidator = [
   validatorMiddleware,
 ];
 
-exports.createProductValidator = [
+export const createProductValidator = [
   check("title")
     .notEmpty()
     .withMessage("Product title is required")
@@ -141,7 +141,7 @@ exports.createProductValidator = [
   validatorMiddleware,
 ];
 
-exports.updateProductValidator = [
+export const updateProductValidator = [
   check("id")
     .notEmpty()
     .withMessage("Brand id is required")
@@ -158,7 +158,7 @@ exports.updateProductValidator = [
   validatorMiddleware,
 ];
 
-exports.deleteProductValidator = [
+export const deleteProductValidator = [
   check("id")
     .notEmpty()
     .withMessage("Brand id is required")

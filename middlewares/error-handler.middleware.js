@@ -33,4 +33,4 @@ const sendErrorForProd = (err, res) => {
     });
   }
 };
-module.exports = globalErrorHandler;
+export default globalErrorHandler;

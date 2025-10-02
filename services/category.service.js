@@ -1,21 +1,13 @@
-const asyncHandler = require("express-async-handler");
-const sharp = require("sharp");
+import asyncHandler from "express-async-handler";
+import sharp from "sharp";
 
-const CategoryModel = require("../models/category.model");
-const { uploadSingleFile } = require("../middlewares/upload-file.middleware");
-const {
-  deleteOne,
-  updateOne,
-  createOne,
-  getOne,
-  getAll,
-} = require("./handler-factory");
+import CategoryModel from "../models/category.model.js";
+import { uploadSingleFile } from "../middlewares/upload-file.middleware.js";
+import { deleteOne, updateOne, createOne, getOne, getAll } from "./handler-factory.js";
 
-// upload single image
-exports.uploadCategoryImage = uploadSingleFile("image");
+export const uploadCategoryImage = uploadSingleFile("image");
 
-// image processing
-exports.imageProcessing = asyncHandler(async (req, res, next) => {
+export const imageProcessing = asyncHandler(async (req, res, next) => {
   if (!req.file) return next();
   const fileName = `category-${req.file.originalname.split(".")[0]}.jpeg`;
   await sharp(req.file.buffer)
@@ -34,27 +26,12 @@ exports.imageProcessing = asyncHandler(async (req, res, next) => {
 {
 }
 
-// @desc    Create Category
-// @route   POST  /api/v1/categories
-// @access  Private
-exports.createCategory = createOne(CategoryModel, "Category");
+export const createCategory = createOne(CategoryModel, "Category");
 
-// @desc    Update Specific Category
-// @route   PUT /api/v1/categories/:id
-// @access  Private
-exports.updateCategory = updateOne(CategoryModel, "Category");
+export const updateCategory = updateOne(CategoryModel, "Category");
 
-// @desc    Delete Specific Category
-// @route   DELETE /api/v1/categories/:id
-// @access  Private
-exports.deleteCategory = deleteOne(CategoryModel, "Category");
+export const deleteCategory = deleteOne(CategoryModel, "Category");
 
-// @desc    Get list of Categories
-// @route   GET /api/v1/categories
-// @access  Public
-exports.getAllCategories = getAll(CategoryModel, "Category");
+export const getAllCategories = getAll(CategoryModel, "Category");
 
-// @desc    Get Specific Category by id
-// @route   GET /api/v1/categories/:id
-// @access  Public
-exports.getSpecificCategory = getOne(CategoryModel, "Category");
+export const getSpecificCategory = getOne(CategoryModel, "Category");

@@ -1,21 +1,18 @@
-const path = require("path");
-
 // Required External Modules
-const express = require("express");
-const cors = require("cors");
-const dotenv = require("dotenv");
-const morgan = require("morgan");
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+import express, { json } from "express";
+import cors from "cors";
+import { config } from "dotenv";
+import morgan from "morgan";
 
-dotenv.config();
-const ApiError = require("./utils/api-error");
-const globalErrorHandler = require("./middlewares/error-handler.middleware");
-const dbConnection = require("./config/database");
+config();
+import ApiError from "./utils/api-error.js";
+import globalErrorHandler from "./middlewares/error-handler.middleware.js";
+import dbConnection from "./config/database.js";
 
 // Routes
-const categoryRoutes = require("./routes/category.route");
-const subCategoryRoutes = require("./routes/subcategory.route");
-const brandRoutes = require("./routes/brand.route");
-const productRoutes = require("./routes/product.route");
+import mountRoutes from "./routes/index.js";
 
 // Establish Database Connection
 dbConnection();
@@ -33,8 +30,14 @@ app.use(cors()); // Enable CORS
 
 // Middlewares
 // parse JSON Request Bodies
-app.use(express.json());
-app.use(express.static(path.join(__dirname, "uploads")));
+app.use(json());
+
+// Recreate __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Serve static files
+app.use(express.static(join(__dirname, "uploads")));
 
 // HTTP Request Logger
 if (process.env.NODE_ENV === "development") {
@@ -43,10 +46,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // Mount Routes
-app.use("/api/v1/categories", categoryRoutes);
-app.use("/api/v1/subcategories", subCategoryRoutes);
-app.use("/api/v1/brands", brandRoutes);
-app.use("/api/v1/products", productRoutes);
+mountRoutes(app);
 
 // Handle Undefined Routes
 app.all("/{*splat}", (req, res, next) => {

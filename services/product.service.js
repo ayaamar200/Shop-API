@@ -1,20 +1,17 @@
-const asyncHandler = require("express-async-handler");
-const sharp = require("sharp");
+import asyncHandler from "express-async-handler";
+import sharp from "sharp";
 
-const ProductModel = require("../models/product.model");
-const {
+import ProductModel from "../models/product.model.js";
+import {
   deleteOne,
   updateOne,
   getOne,
   createOne,
   getAll,
-} = require("./handler-factory");
-const {
-  uploadMultipleFiles,
-} = require("../middlewares/upload-file.middleware");
+} from "./handler-factory.js";
+import { uploadMultipleFiles } from "../middlewares/upload-file.middleware.js";
 
-// upload Multiple images
-exports.uploadProductImage = uploadMultipleFiles([
+export const uploadProductImage = uploadMultipleFiles([
   {
     name: "imageCover",
     maxCount: 1,
@@ -25,8 +22,7 @@ exports.uploadProductImage = uploadMultipleFiles([
   },
 ]);
 
-// image processing
-exports.imageProcessing = asyncHandler(async (req, res, next) => {
+export const imageProcessing = asyncHandler(async (req, res, next) => {
   if (!req.files) return next(); // Image Processing for Image Cover
   if (req.files.imageCover) {
     const imageCoverFileName = `product-${
@@ -70,27 +66,12 @@ exports.imageProcessing = asyncHandler(async (req, res, next) => {
   next();
 });
 
-// @desc    Create Product
-// @route   POST  /api/v1/products
-// @access  Private
-exports.createProduct = createOne(ProductModel, "Product");
+export const createProduct = createOne(ProductModel, "Product");
 
-// @desc    Update Specific Product
-// @route   PUT /api/v1/products/:id
-// @access  Private
-exports.updateProduct = updateOne(ProductModel, "Product");
+export const updateProduct = updateOne(ProductModel, "Product");
 
-// @desc    Delete Specific Product
-// @route   DELETE /api/v1/products/:id
-// @access  Private
-exports.deleteProduct = deleteOne(ProductModel, "Product");
+export const deleteProduct = deleteOne(ProductModel, "Product");
 
-// @desc    Get list of Products
-// @route   GET /api/v1/products
-// @access  Public
-exports.getAllProducts = getAll(ProductModel, "Product", "ProductModel");
+export const getAllProducts = getAll(ProductModel, "Product", "ProductModel");
 
-// @desc    Get Specific Product by id
-// @route   GET /api/v1/products/:id
-// @access  Public
-exports.getSpecificProduct = getOne(ProductModel, "Product");
+export const getSpecificProduct = getOne(ProductModel, "Product");

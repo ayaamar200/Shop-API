@@ -1,4 +1,4 @@
-const qs = require("qs");
+import { parse } from "qs";
 
 class APIFeatures {
   constructor(mongooseQuery, queryString, model) {
@@ -10,7 +10,7 @@ class APIFeatures {
 
   //   Filtering
   filter() {
-    const queryObj = qs.parse(this.queryString);
+    const queryObj = parse(this.queryString);
     const excludeFields = ["page", "limit", "sort", "fields", "keyword"];
     excludeFields.forEach((el) => delete queryObj[el]);
     // Advanced filter for price, rating
@@ -89,4 +89,4 @@ class APIFeatures {
   }
 }
 
-module.exports = APIFeatures;
+export default APIFeatures;

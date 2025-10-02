@@ -1,13 +1,13 @@
 // @desc   Routes for category-related endpoints
 
-const express = require("express");
-const {
+import { Router } from "express";
+import {
   getSpecificCategoryValidator,
   createCategoryValidator,
   updateCategoryValidator,
   deleteCategoryValidator,
-} = require("../utils/validators/category.validator");
-const {
+} from "../utils/validators/category.validator.js";
+import {
   getAllCategories,
   getSpecificCategory,
   createCategory,
@@ -15,21 +15,31 @@ const {
   deleteCategory,
   uploadCategoryImage,
   imageProcessing,
-} = require("../services/category.service");
-const router = express.Router();
-const subCategoryRoute = require("./subcategory.route");
+} from "../services/category.service.js";
+import subCategoryRoute from "./subcategory.route.js";
+
+const router = Router();
 
 router.use("/:category/subcategories", subCategoryRoute);
-
 
 router
   .route("/")
   .get(getAllCategories)
-  .post(uploadCategoryImage,imageProcessing,createCategoryValidator, createCategory);
+  .post(
+    uploadCategoryImage,
+    imageProcessing,
+    createCategoryValidator,
+    createCategory
+  );
 router
   .route("/:id")
   .get(getSpecificCategoryValidator, getSpecificCategory)
-  .put(uploadCategoryImage,imageProcessing,updateCategoryValidator, updateCategory)
+  .put(
+    uploadCategoryImage,
+    imageProcessing,
+    updateCategoryValidator,
+    updateCategory
+  )
   .delete(deleteCategoryValidator, deleteCategory);
 
-module.exports = router;
+export default router;

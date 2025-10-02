@@ -1,11 +1,11 @@
-const express = require("express");
-const {
+import { Router } from "express";
+import {
   createSubCategoryValidator,
   updateSubCategoryValidator,
   deleteSubCategoryValidator,
   getSpecificSubCategoryValidator,
-} = require("../utils/validators/subcategory.validator");
-const {
+} from "../utils/validators/subcategory.validator.js";
+import {
   createSubCategory,
   updateSubCategory,
   deleteSubCategory,
@@ -15,9 +15,9 @@ const {
   setCategoryIdToBody,
   uploadSubcategoryImage,
   imageProcessing,
-} = require("../services/subcategory.service");
+} from "../services/subcategory.service.js";
 // mergeParams to get access to params from parent router (category)
-const router = express.Router({ mergeParams: true });
+const router = Router({ mergeParams: true });
 
 router
   .route("/")
@@ -40,4 +40,4 @@ router
     updateSubCategory
   )
   .delete(deleteSubCategoryValidator, deleteSubCategory);
-module.exports = router;
+export default router;

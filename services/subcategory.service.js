@@ -1,21 +1,19 @@
-const asyncHandler = require("express-async-handler");
-const sharp = require("sharp");
+import asyncHandler from "express-async-handler";
+import sharp from "sharp";
 
-const { uploadSingleFile } = require("../middlewares/upload-file.middleware");
-const SubCategoryModel = require("../models/subcategory.model");
-const {
+import { uploadSingleFile } from "../middlewares/upload-file.middleware.js";
+import SubCategoryModel from "../models/subcategory.model.js";
+import {
   deleteOne,
   updateOne,
   createOne,
   getOne,
   getAll,
-} = require("./handler-factory");
+} from "./handler-factory.js";
 
-// upload single image
-exports.uploadSubcategoryImage = uploadSingleFile("image");
+export const uploadSubcategoryImage = uploadSingleFile("image");
 
-// image processing
-exports.imageProcessing = asyncHandler(async (req, res, next) => {
+export const imageProcessing = asyncHandler(async (req, res, next) => {
   if (!req.file) return next();
   const fileName = `subcategory-${req.file.originalname.split(".")[0]}.jpeg`;
   await sharp(req.file.buffer)
@@ -39,40 +37,25 @@ exports.imageProcessing = asyncHandler(async (req, res, next) => {
 // @access Private
 
 // 1.Create SubCategory on Category
-exports.setCategoryIdToBody = (req, res, next) => {
+export function setCategoryIdToBody(req, res, next) {
   if (!req.body.category) req.body.category = req.params.category;
   next();
-};
+}
 
 // 2.Get all Subcategories on Category
-exports.createFilterObj = (req, res, next) => {
+export function createFilterObj(req, res, next) {
   let filterObject = {};
   if (req.params.category) filterObject = { category: req.params.category };
   req.filterObj = filterObject;
   next();
-};
+}
 
-// @desc    Create SubCategory
-// @route   POST  /api/v1/subcategories
-// @access  Private
-exports.createSubCategory = createOne(SubCategoryModel, "SubCategory");
+export const createSubCategory = createOne(SubCategoryModel, "SubCategory");
 
-// @desc    Update Specific SubCategory
-// @route   PUT /api/v1/subcategories/:id
-// @access  Private
-exports.updateSubCategory = updateOne(SubCategoryModel, "SubCategory");
+export const updateSubCategory = updateOne(SubCategoryModel, "SubCategory");
 
-// @desc    Delete Specific SubCategory
-// @route   DELETE /api/v1/subcategories/:id
-// @access  Private
-exports.deleteSubCategory = deleteOne(SubCategoryModel, "SubCategory");
+export const deleteSubCategory = deleteOne(SubCategoryModel, "SubCategory");
 
-// @desc    Get list of SubCategories
-// @route   GET /api/v1/subcategories
-// @access  Public
-exports.getAllSubCategories = getAll(SubCategoryModel, "SubCategory");
+export const getAllSubCategories = getAll(SubCategoryModel, "SubCategory");
 
-// @desc    Get specific SubCategory by id
-// @route   GET /api/v1/subcategories/:id
-// @access  Public
-exports.getSpecificSubCategory = getOne(SubCategoryModel, "SubCategory");
+export const getSpecificSubCategory = getOne(SubCategoryModel, "SubCategory");

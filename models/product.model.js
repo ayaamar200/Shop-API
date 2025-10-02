@@ -1,6 +1,6 @@
 // @desc   Brand Model for MongoDB using Mongoose
-const mongoose = require("mongoose");
-const productSchema = new mongoose.Schema(
+import { Schema, model } from "mongoose";
+const productSchema = new Schema(
   {
     title: {
       type: String,
@@ -47,18 +47,18 @@ const productSchema = new mongoose.Schema(
     },
     images: [String],
     category: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Category",
       required: [true, "Product must belong to a category"],
     },
     subcategories: [
       {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "Subcategory",
       },
     ],
     brand: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Brand",
     },
     ratingsAverage: {
@@ -111,5 +111,5 @@ productSchema.post("save", (doc) => {
   setImageUrl(doc);
 });
 
-const ProductModel = mongoose.model("Product", productSchema);
-module.exports = ProductModel;
+const ProductModel = model("Product", productSchema);
+export default ProductModel;

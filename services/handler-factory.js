@@ -1,9 +1,9 @@
-const asyncHandler = require("express-async-handler");
-const ApiError = require("../utils/api-error");
-const APIFeatures = require("../utils/api-features");
+import asyncHandler from "express-async-handler";
+import ApiError from "../utils/api-error.js";
+import APIFeatures from "../utils/api-features.js";
 
-exports.deleteOne = (Model, field) =>
-  asyncHandler(async (req, res, next) => {
+export function deleteOne(Model, field) {
+  return asyncHandler(async (req, res, next) => {
     const { id } = req.params;
     const document = await Model.findByIdAndDelete(id);
     if (!document) {
@@ -14,9 +14,30 @@ exports.deleteOne = (Model, field) =>
       msg: `${field} Deleted Successfully`,
     });
   });
+}
 
-exports.updateOne = (Model, field) =>
-  asyncHandler(async (req, res, next) => {
+// export function deactivateOne(Model, field) {
+//   return asyncHandler(async (req, res) => {
+//     const { id } = req.params;
+
+//     const document = await Model.findByIdAndUpdate(
+//       id,
+//       { isActive: false },
+//       { new: true }
+//     );
+//     if (!document) {
+//       return next(new ApiError(`${field} Not Found for This id ${id}`, 404));
+//     }
+//     res.status(200).json({
+//       status: "success",
+//       msg: `${field} Deactivated Successfully`,
+//       data: document,
+//     });
+//   });
+// }
+
+export function updateOne(Model, field) {
+  return asyncHandler(async (req, res, next) => {
     const document = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
@@ -29,9 +50,10 @@ exports.updateOne = (Model, field) =>
       data: document,
     });
   });
+}
 
-exports.createOne = (Model, field) =>
-  asyncHandler(async (req, res) => {
+export function createOne(Model, field) {
+  return asyncHandler(async (req, res) => {
     const newDocument = await Model.create(req.body);
     res.status(201).json({
       status: "success",
@@ -39,9 +61,10 @@ exports.createOne = (Model, field) =>
       data: newDocument,
     });
   });
+}
 
-exports.getOne = (Model, field) =>
-  asyncHandler(async (req, res, next) => {
+export function getOne(Model, field) {
+  return asyncHandler(async (req, res, next) => {
     const { id } = req.params;
     const document = await Model.findById(id);
     if (!document) {
@@ -53,9 +76,10 @@ exports.getOne = (Model, field) =>
       data: document,
     });
   });
+}
 
-exports.getAll = (Model, field, modelName = "") =>
-  asyncHandler(async (req, res) => {
+export function getAll(Model, field, modelName = "") {
+  return asyncHandler(async (req, res) => {
     let filter = {};
     if (req.filterObj) {
       filter = req.filterObj;
@@ -80,3 +104,4 @@ exports.getAll = (Model, field, modelName = "") =>
       data: allDocuments,
     });
   });
+}

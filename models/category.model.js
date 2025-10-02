@@ -1,6 +1,6 @@
 // @desc   Category Model for MongoDB using Mongoose
-const mongoose = require("mongoose");
-const categorySchema = new mongoose.Schema(
+import { Schema, model } from "mongoose";
+const categorySchema = new Schema(
   {
     name: {
       type: String,
@@ -35,5 +35,5 @@ categorySchema.post("save", (doc) => {
   setImageUrl(doc);
 });
 
-const CategoryModel = mongoose.model("Category", categorySchema);
-module.exports = CategoryModel;
+const CategoryModel = model("Category", categorySchema);
+export default CategoryModel;

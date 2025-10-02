@@ -1,6 +1,6 @@
 // @desc   Brand Model for MongoDB using Mongoose
-const mongoose = require("mongoose");
-const brandSchema = new mongoose.Schema(
+import { Schema, model } from "mongoose";
+const brandSchema = new Schema(
   {
     name: {
       type: String,
@@ -35,5 +35,5 @@ brandSchema.post("save", (doc) => {
   setImageUrl(doc);
 });
 
-const BrandModel = mongoose.model("Brand", brandSchema);
-module.exports = BrandModel;
+const BrandModel = model("Brand", brandSchema);
+export default BrandModel;

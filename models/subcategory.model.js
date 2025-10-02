@@ -1,7 +1,7 @@
 // @desc   SubCategory Model for MongoDB using Mongoose
-const mongoose = require("mongoose");
+import { Schema, model } from "mongoose";
 
-const subCategorySchema = new mongoose.Schema(
+const subCategorySchema = new Schema(
   {
     name: {
       type: String,
@@ -17,7 +17,7 @@ const subCategorySchema = new mongoose.Schema(
     },
     image: String,
     category: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Category",
       required: [true, "Parent Category ID is required"],
       index: true,
@@ -50,5 +50,5 @@ subCategorySchema.post("save", (doc) => {
   setImageUrl(doc);
 });
 
-const SubCategoryModel = mongoose.model("Subcategory", subCategorySchema);
-module.exports = SubCategoryModel;
+const SubCategoryModel = model("Subcategory", subCategorySchema);
+export default SubCategoryModel;

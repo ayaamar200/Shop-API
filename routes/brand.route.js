@@ -1,11 +1,11 @@
-const express = require("express");
-const {
+import { Router } from "express";
+import {
   getSpecificBrandValidator,
   createBrandValidator,
   updateBrandValidator,
   deleteBrandValidator,
-} = require("../utils/validators/brand.validator");
-const {
+} from "../utils/validators/brand.validator.js";
+import {
   getAllBrands,
   getSpecificBrand,
   createBrand,
@@ -13,8 +13,8 @@ const {
   deleteBrand,
   uploadBrandImage,
   imageProcessing,
-} = require("../services/brand.service");
-const router = express.Router();
+} from "../services/brand.service.js";
+const router = Router();
 
 router
   .route("/")
@@ -26,4 +26,4 @@ router
   .put(uploadBrandImage, imageProcessing, updateBrandValidator, updateBrand)
   .delete(deleteBrandValidator, deleteBrand);
 
-module.exports = router;
+export default router;
