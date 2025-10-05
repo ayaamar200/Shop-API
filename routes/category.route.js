@@ -1,5 +1,3 @@
-// @desc   Routes for category-related endpoints
-
 import { Router } from "express";
 import {
   getSpecificCategoryValidator,
@@ -17,6 +15,7 @@ import {
   imageProcessing,
 } from "../services/category.service.js";
 import subCategoryRoute from "./subcategory.route.js";
+import { protect } from "../services/auth.service.js";
 
 const router = Router();
 
@@ -26,6 +25,7 @@ router
   .route("/")
   .get(getAllCategories)
   .post(
+    protect,
     uploadCategoryImage,
     imageProcessing,
     createCategoryValidator,

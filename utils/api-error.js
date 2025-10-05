@@ -1,4 +1,3 @@
-// @desc   Custom API Error class to handle operational errors
 class ApiError extends Error {
   constructor(message, statusCode) {
     super(message);

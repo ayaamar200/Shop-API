@@ -34,7 +34,7 @@ export const updateUser = asyncHandler(async (req, res, next) => {
   const user = await UserModel.findByIdAndUpdate(
     req.params.id,
     {
-      name: req.body.name,
+      username: req.body.username,
       slug: req.body.slug,
       email: req.body.email,
       role: req.body.role,
@@ -59,7 +59,8 @@ export const changeUserPassword = asyncHandler(async (req, res, next) => {
   const user = await UserModel.findByIdAndUpdate(
     req.params.id,
     {
-      newPassword: await bcrypt.hash(req.body.newPassword, 12),
+      password: await bcrypt.hash(req.body.newPassword, 12),
+      passwordChangedAt: Date.now(),
     },
     {
       new: true,
@@ -100,5 +101,3 @@ export const deactivateUser = asyncHandler(async (req, res, next) => {
 export const getAllUsers = getAll(UserModel, "User");
 
 export const getSpecificUser = getOne(UserModel, "User");
-
-// export const deactivateUser = deactivateOne(UserModel, "User");

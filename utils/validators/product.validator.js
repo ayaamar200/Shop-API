@@ -49,8 +49,8 @@ export const createProductValidator = [
     .withMessage("Product price is required")
     .isFloat({ min: 0 })
     .withMessage("Product price must be a non-negative number")
-    .isLength({ max: 32 })
-    .withMessage("Product price must not exceed 32 characters"),
+    .isLength({ max: 2000000 })
+    .withMessage("Product price must be at most 2,000,000"),
 
   // check("priceAfterDiscount")
   //   .optional()
@@ -152,9 +152,116 @@ export const updateProductValidator = [
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;
+    })
+    .isLength({ min: 3, max: 100 })
+    .withMessage("Product title must be between 3 and 100 characters long"),
+
+  check("description")
+    .optional()
+    .isLength({ min: 20, max: 2000 })
+    .withMessage(
+      "Product description must be between 20 and 2000 characters long"
+    ),
+
+  check("price")
+    .optional()
+    .isFloat({ min: 0 })
+    .withMessage("Product price must be a non-negative number")
+    .isLength({ max: 2000000 })
+    .withMessage("Product price must be at most 2,000,000"),
+
+  check("quantity")
+    .optional()
+    .isInt({ min: 0 })
+    .withMessage("Product quantity must be a non-negative integer"),
+  check("sold")
+    .optional()
+    .isInt({ min: 0 })
+    .withMessage("Product sold must be a non-negative integer"),
+
+  // check("priceAfterDiscount")
+  //   .optional()
+  //   .isFloat({ min: 0 })
+  //   .withMessage("Product price after discount must be a non-negative number")
+  //   .custom((val, { req }) => {
+  //     if (val >= req.body.price) {
+  //       throw new Error(
+  //         "Price after discount must be less than the original price"
+  //       );
+  //     }
+  //     return true;
+  //   }),
+
+  check("imageCover").optional(),
+
+  check("images").optional().isArray().withMessage("Images must be an array"),
+
+  check("category")
+    .optional()
+    .isMongoId()
+    .withMessage("Invalid Category ID format")
+    .custom(async (categoryId) => {
+      const exists = await CategoryModel.exists({ _id: categoryId });
+      if (!exists) {
+        throw new Error(`Category Not Found for This id ${categoryId}`);
+      }
+      return true;
     }),
 
-  ,
+  check("subcategories")
+    .optional()
+    .isMongoId()
+    .withMessage("Invalid Subcategory ID format")
+    .custom(async (subcategories, { req }) => {
+      if (!Array.isArray(subcategories))
+        // skip validation if not provided
+        return true;
+
+      // 1. Check all subcategory IDs exist in DB
+      const existingSubs = await SubCategoryModel.find({
+        _id: { $in: subcategories },
+      }).select("_id category");
+
+      if (existingSubs.length !== subcategories.length) {
+        throw new Error("Some subcategory IDs are invalid");
+      }
+
+      // 2. Check all belong to the same parent category
+      const invalid = existingSubs.filter(
+        (sub) => sub.category.toString() !== req.body.category
+      );
+
+      if (invalid.length > 0) {
+        throw new Error(
+          `Some subcategories do not belong to category ${req.body.category}`
+        );
+      }
+
+      return true;
+    }),
+
+  check("brand")
+    .optional()
+    .isMongoId()
+    .withMessage("Invalid Brand ID format")
+    .custom(async (brandId) => {
+      if (!brandId) return true;
+      const exists = await BrandModel.exists({ _id: brandId });
+      if (!exists) {
+        throw new Error(`No brand found for ID: ${brandId}`);
+      }
+      return true;
+    }),
+
+  check("ratingsAverage")
+    .optional()
+    .isFloat({ min: 1, max: 5 })
+    .withMessage("Ratings average must be between 1.0 and 5.0"),
+  check("ratingsQuantity")
+    .optional()
+    .isInt({ min: 0 })
+    .withMessage("Ratings quantity must be a non-negative integer"),
+
   validatorMiddleware,
 ];
 

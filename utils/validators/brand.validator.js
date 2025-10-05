@@ -40,6 +40,8 @@ export const updateBrandValidator = [
       req.body.slug = slugify(val);
       return true;
     }),
+  check("image").optional(),
+
   validatorMiddleware,
 ];
 

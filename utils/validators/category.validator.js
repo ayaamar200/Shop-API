@@ -39,6 +39,8 @@ export const updateCategoryValidator = [
       req.body.slug = slugify(val);
       return true;
     }),
+  check("image").optional(),
+
   validatorMiddleware,
 ];
 

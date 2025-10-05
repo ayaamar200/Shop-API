@@ -5,6 +5,7 @@ import brandRoutes from "./brand.route.js";
 import productRoutes from "./product.route.js";
 import couponRoutes from "./coupon.route.js";
 import userRoutes from "./user.route.js";
+import authRoutes from "./auth.route.js";
 
 const mountRoutes = (app) => {
   app.use("/api/v1/categories", categoryRoutes);
@@ -13,6 +14,7 @@ const mountRoutes = (app) => {
   app.use("/api/v1/products", productRoutes);
   app.use("/api/v1/coupons", couponRoutes);
   app.use("/api/v1/users", userRoutes);
+  app.use("/api/v1/auth", authRoutes);
 };
 
 export default mountRoutes;

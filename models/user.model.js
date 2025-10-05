@@ -6,7 +6,6 @@ const userSchema = new Schema(
       type: String,
       required: [true, " User name is required"],
       minlength: [3, "User name must be at least 3 characters"],
-
       trim: true,
     },
     slug: {
@@ -15,12 +14,13 @@ const userSchema = new Schema(
     },
     email: {
       type: String,
+      unique: [true, "User email must be unique"],
+      required: [true, "User email is required"],
       trim: true,
       lowercase: true,
     },
     phone: {
       type: String,
-      unique: [true, "User phone must be unique"],
       required: [true, "User phone is required"],
       trim: true,
     },
@@ -30,6 +30,7 @@ const userSchema = new Schema(
       trim: true,
       minlength: [6, "User password must be at least 6 characters"],
     },
+    passwordChangedAt: Date,
 
     profileImage: String,
 

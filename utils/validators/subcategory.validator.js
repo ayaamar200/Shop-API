@@ -65,6 +65,8 @@ export const updateSubCategoryValidator = [
       }
       return true;
     }),
+  check("image").optional(),
+
   validatorMiddleware,
 ];
 

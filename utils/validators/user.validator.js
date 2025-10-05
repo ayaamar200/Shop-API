@@ -1,4 +1,4 @@
-import { body, check } from "express-validator";
+import { check } from "express-validator";
 import slugify from "slugify";
 import bcrypt from "bcrypt";
 import validatorMiddleware from "../../middlewares/validator.middleware.js";
@@ -16,6 +16,8 @@ export const createUserValidator = [
     }),
 
   check("email")
+    .notEmpty()
+    .withMessage("User email is required")
     .isEmail()
     .withMessage("User email is invalid")
     .custom((val) => {
@@ -27,15 +29,12 @@ export const createUserValidator = [
           resolve(true);
         });
       });
-    })
-    .optional(),
-
+    }),
   check("phone")
     .notEmpty()
     .withMessage("User phone is required")
     .isMobilePhone(["ar-EG", "ar-SA", "en-US"])
     .withMessage("User phone is invalid"),
-
   check("password")
     .notEmpty()
     .withMessage("User password is required")
@@ -48,17 +47,16 @@ export const createUserValidator = [
     })
     .withMessage(
       "User password must contain at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 symbol"
-    ),
-  body("rePassword")
-    .notEmpty()
-    .withMessage("User confirm password is required")
-    .custom((rePassword, { req }) => {
-      if (rePassword !== req.body.password) {
+    )
+    .custom((password, { req }) => {
+      if (password !== req.body.rePassword) {
         throw new Error("Passwords do not match");
       }
       return true;
     }),
-
+  check("rePassword")
+    .notEmpty()
+    .withMessage("User confirm password is required"),
   check("profileImage").optional(),
   check("role").optional(),
   validatorMiddleware,
@@ -107,7 +105,6 @@ export const updateUserValidator = [
     .optional()
     .isMobilePhone(["ar-EG", "ar-SA", "en-US"])
     .withMessage("User phone is invalid"),
-
   check("profileImage").optional(),
   check("role").optional(),
   validatorMiddleware,
@@ -139,23 +136,15 @@ export const changeUserPasswordValidator = [
     .isMongoId()
     .withMessage("Invalid User id format"),
 
-  body("currentPassword")
+  check("currentPassword")
     .notEmpty()
-    .withMessage("User current password is required")
-    .custom(async (val, { req }) => {
-      // 1- verify new password
-      const user = await UserModel.findById(req.params.id);
-      if (!user) {
-        throw new Error("User not found for this id");
-      }
-      const isMatch = await bcrypt.compare(val, user.password);
-      if (!isMatch) {
-        throw new Error("User current password is incorrect");
-      }
-      return true;
-    }),
+    .withMessage("User current password is required"),
 
-  body("newPassword")
+  check("rePassword")
+    .notEmpty()
+    .withMessage("User confirm password is required"),
+
+  check("newPassword")
     .notEmpty()
     .withMessage("User new password is required")
     .isStrongPassword({
@@ -167,17 +156,27 @@ export const changeUserPasswordValidator = [
     })
     .withMessage(
       "User password must contain at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 symbol"
-    ),
+    )
+    .custom(async (val, { req }) => {
+      // 1- Verify current password
+      const user = await UserModel.findById(req.params.id);
+      if (!user) {
+        throw new Error("User not found for this id");
+      }
+      const isCorrectPassword = await bcrypt.compare(
+        req.body.currentPassword,
+        user.password
+      );
+      if (!isCorrectPassword) {
+        throw new Error("Current Password is Incorrect");
+      }
 
-  body("rePassword")
-    .notEmpty()
-    .withMessage("User confirm password is required")
-    .custom((rePassword, { req }) => {
-      if (rePassword !== req.body.newPassword) {
+      // 2- Verify new password
+      if (val !== req.body.rePassword) {
         throw new Error("Passwords do not match");
       }
       return true;
     }),
-
+  ,
   validatorMiddleware,
 ];
