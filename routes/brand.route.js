@@ -14,16 +14,31 @@ import {
   uploadBrandImage,
   imageProcessing,
 } from "../services/brand.service.js";
+import { allowRoles, protect } from "../services/auth.service.js";
 const router = Router();
 
 router
   .route("/")
   .get(getAllBrands)
-  .post(uploadBrandImage, imageProcessing, createBrandValidator, createBrand);
+  .post(
+    protect,
+    allowRoles("admin"),
+    uploadBrandImage,
+    imageProcessing,
+    createBrandValidator,
+    createBrand
+  );
 router
   .route("/:id")
   .get(getSpecificBrandValidator, getSpecificBrand)
-  .put(uploadBrandImage, imageProcessing, updateBrandValidator, updateBrand)
-  .delete(deleteBrandValidator, deleteBrand);
+  .put(
+    protect,
+    allowRoles("admin"),
+    uploadBrandImage,
+    imageProcessing,
+    updateBrandValidator,
+    updateBrand
+  )
+  .delete(protect, allowRoles("admin"), deleteBrandValidator, deleteBrand);
 
 export default router;

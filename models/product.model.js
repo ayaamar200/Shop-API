@@ -24,7 +24,6 @@ const productSchema = new Schema(
       type: Number,
       required: [true, "Product quantity is required"],
       min: [0, "Product quantity must be at least 0"],
-      
     },
     sold: {
       type: Number,
@@ -80,10 +79,20 @@ const productSchema = new Schema(
 
 // Mongoose query middleware
 productSchema.pre(/^find/, function (next) {
-  this.populate({
-    path: "category",
-    select: "name ",
-  });
+  this.populate([
+    {
+      path: "category",
+      select: "name _id slug",
+    },
+    {
+      path: "subcategories",
+      select: "name _id slug",
+    },
+    {
+      path: "brand",
+      select: "name _id slug",
+    },
+  ]);
   next();
 });
 

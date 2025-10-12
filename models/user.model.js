@@ -32,6 +32,10 @@ const userSchema = new Schema(
     },
     passwordChangedAt: Date,
 
+    passwordResetCode: String,
+    passwordResetExpires: Date,
+    passwordResetVerified: Boolean,
+
     profileImage: String,
 
     role: {

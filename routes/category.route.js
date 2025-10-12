@@ -15,7 +15,7 @@ import {
   imageProcessing,
 } from "../services/category.service.js";
 import subCategoryRoute from "./subcategory.route.js";
-import { protect } from "../services/auth.service.js";
+import { allowRoles, protect } from "../services/auth.service.js";
 
 const router = Router();
 
@@ -26,6 +26,7 @@ router
   .get(getAllCategories)
   .post(
     protect,
+    allowRoles("admin"),
     uploadCategoryImage,
     imageProcessing,
     createCategoryValidator,
@@ -35,11 +36,18 @@ router
   .route("/:id")
   .get(getSpecificCategoryValidator, getSpecificCategory)
   .put(
+    protect,
+    allowRoles("admin"),
     uploadCategoryImage,
     imageProcessing,
     updateCategoryValidator,
     updateCategory
   )
-  .delete(deleteCategoryValidator, deleteCategory);
+  .delete(
+    protect,
+    allowRoles("admin"),
+    deleteCategoryValidator,
+    deleteCategory
+  );
 
 export default router;

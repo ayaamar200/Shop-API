@@ -9,6 +9,7 @@ export function deleteOne(Model, field) {
     if (!document) {
       return next(new ApiError(`${field} Not Found for This id ${id}`, 404));
     }
+
     res.status(200).json({
       status: "success",
       msg: `${field} Deleted Successfully`,

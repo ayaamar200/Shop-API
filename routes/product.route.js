@@ -15,12 +15,15 @@ import {
   uploadProductImage,
   imageProcessing,
 } from "../services/product.service.js";
+import { allowRoles, protect } from "../services/auth.service.js";
 const router = Router();
 
 router
   .route("/")
   .get(getAllProducts)
   .post(
+    protect,
+    allowRoles("admin"),
     uploadProductImage,
     imageProcessing,
     createProductValidator,
@@ -30,11 +33,13 @@ router
   .route("/:id")
   .get(getSpecificProductValidator, getSpecificProduct)
   .put(
+    protect,
+    allowRoles("admin"),
     uploadProductImage,
     imageProcessing,
     updateProductValidator,
     updateProduct
   )
-  .delete(deleteProductValidator, deleteProduct);
+  .delete(protect, allowRoles("admin"), deleteProductValidator, deleteProduct);
 
 export default router;

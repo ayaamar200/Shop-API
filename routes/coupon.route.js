@@ -12,13 +12,17 @@ import {
   updateCouponValidator,
   deleteCouponValidator,
 } from "../utils/validators/coupon.validator.js";
+import { allowRoles, protect } from "../services/auth.service.js";
 const router = Router();
 
-router.route("/").get(getAllCoupons).post(createCouponValidator, createCoupon);
+router
+  .route("/")
+  .get(getAllCoupons)
+  .post(protect, allowRoles("admin"), createCouponValidator, createCoupon);
 router
   .route("/:id")
   .get(getCouponValidator, getCoupon)
-  .put(updateCouponValidator, updateCoupon)
-  .delete(deleteCouponValidator, deleteCoupon);
+  .put(protect, allowRoles("admin"), updateCouponValidator, updateCoupon)
+  .delete(protect, allowRoles("admin"), deleteCouponValidator, deleteCoupon);
 
 export default router;

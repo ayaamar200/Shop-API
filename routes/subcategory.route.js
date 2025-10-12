@@ -16,6 +16,7 @@ import {
   uploadSubcategoryImage,
   imageProcessing,
 } from "../services/subcategory.service.js";
+import { allowRoles, protect } from "../services/auth.service.js";
 // mergeParams to get access to params from parent router (category)
 const router = Router({ mergeParams: true });
 
@@ -23,6 +24,8 @@ router
   .route("/")
   .get(createFilterObj, getAllSubCategories)
   .post(
+    protect,
+    allowRoles("admin"),
     uploadSubcategoryImage,
     imageProcessing,
     setCategoryIdToBody,
@@ -34,10 +37,17 @@ router
   .route("/:id")
   .get(getSpecificSubCategoryValidator, getSpecificSubCategory)
   .put(
+    protect,
+    allowRoles("admin"),
     uploadSubcategoryImage,
     imageProcessing,
     updateSubCategoryValidator,
     updateSubCategory
   )
-  .delete(deleteSubCategoryValidator, deleteSubCategory);
+  .delete(
+    protect,
+    allowRoles("admin"),
+    deleteSubCategoryValidator,
+    deleteSubCategory
+  );
 export default router;
