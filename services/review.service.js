@@ -1,8 +1,11 @@
-
 import ReviewModel from "../models/reviews.model.js";
-import { deleteOne, updateOne, createOne, getOne, getAll } from "./handler-factory.js";
-
-
+import {
+  deleteOne,
+  updateOne,
+  createOne,
+  getOne,
+  getAll,
+} from "./handler-factory.js";
 
 export const createReview = createOne(ReviewModel, "Review");
 

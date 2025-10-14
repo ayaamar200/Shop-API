@@ -1,10 +1,4 @@
 import { Router } from "express";
-// import {
-//   getSpecificReviewValidator,
-//   createReviewValidator,
-//   updateReviewValidator,
-//   deleteReviewValidator,
-// } from "../utils/validators/brand.validator.js";
 
 import {
   createReview,
@@ -14,17 +8,28 @@ import {
   updateReview,
 } from "../services/review.service.js";
 import { allowRoles, protect } from "../services/auth.service.js";
+import {
+  createReviewValidator,
+  deleteReviewValidator,
+  getSpecificReviewValidator,
+  updateReviewValidator,
+} from "../utils/validators/review.validator.js";
 
 const router = Router();
 
 router
   .route("/")
   .get(getAllReviews)
-  .post(protect, allowRoles("user"), createReview);
+  .post(protect, allowRoles("user"), createReviewValidator, createReview);
 router
   .route("/:id")
-  .get(getSpecificReview)
-  .put(protect, allowRoles("user"), updateReview)
-  .delete(protect, allowRoles("user", "admin"), deleteReview);
+  .get(getSpecificReviewValidator, getSpecificReview)
+  .put(protect, allowRoles("user"), updateReviewValidator, updateReview)
+  .delete(
+    protect,
+    allowRoles("user", "admin"),
+    deleteReviewValidator,
+    deleteReview
+  );
 
 export default router;

@@ -44,10 +44,15 @@ export function createOne(Model, field) {
   });
 }
 
-export function getOne(Model, field) {
+export function getOne(Model, field, populateOpts) {
   return asyncHandler(async (req, res, next) => {
     const { id } = req.params;
-    const document = await Model.findById(id);
+    let query = Model.findById(id);
+    if (populateOpts) {
+      query = query.populate(populateOpts);
+    }
+
+    const document = await query;
     if (!document) {
       return next(new ApiError(`${field} Not Found for This id ${id}`, 404));
     }
@@ -67,7 +72,7 @@ export function getAll(Model, field, modelName = "") {
     }
 
     const countDocuments = await Model.countDocuments();
-    const features = new APIFeatures(Model.find(filter), req.query, Model)
+    const features = new APIFeatures(Model.find(filter), req.query)
       .paginate(countDocuments)
       .filter()
       .search(modelName)

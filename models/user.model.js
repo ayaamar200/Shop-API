@@ -11,6 +11,7 @@ const userSchema = new Schema(
     slug: {
       type: String,
       lowercase: true,
+      required: true,
     },
     email: {
       type: String,

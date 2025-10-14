@@ -1,10 +1,9 @@
 import { parse } from "qs";
 
 class APIFeatures {
-  constructor(mongooseQuery, queryString, model) {
+  constructor(mongooseQuery, queryString) {
     this.mongooseQuery = mongooseQuery;
     this.queryString = queryString;
-    this.model = model;
     this.queryObjFinal = {};
   }
 
@@ -63,7 +62,7 @@ class APIFeatures {
   // Pagination
   paginate(countDocuments) {
     const page = parseInt(this.queryString.page * 1) || 1;
-    const limit = parseInt(this.queryString.limit * 1) || 50;
+    const limit = parseInt(this.queryString.limit * 1) || 15;
     const skip = (page - 1) * limit;
     const endIndex = page * limit;
 

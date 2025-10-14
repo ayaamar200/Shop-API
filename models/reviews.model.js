@@ -1,25 +1,38 @@
 import { Schema, model } from "mongoose";
-const reviewSchema = new Schema({
+const reviewSchema = new Schema(
+  {
     review: {
-        type: String,
+      type: String,
     },
     rating: {
-        type: Number,
-        required: [true, "Review rating is required"],
-        min: [1, "Rating must be at least 1.0"],
-        max: [5, "Rating must be at most 5.0"],
+      type: Number,
+      required: [true, "Review rating is required"],
+      min: [1, "Rating must be at least 1.0"],
+      max: [5, "Rating must be at most 5.0"],
     },
     user: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-        required: [true, "Review must belong to a user"],
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "Review must belong to a user"],
     },
     product: {
-        type: Schema.Types.ObjectId,
-        ref: "Product",
-        required: [true, "Review must belong to a product"],
+      type: Schema.Types.ObjectId,
+      ref: "Product",
+      required: [true, "Review must belong to a product"],
     },
-}, { timestamps: true });
+  },
+  { timestamps: true }
+);
+
+reviewSchema.pre(/^find/, function (next) {
+  this.populate([
+    {
+      path: "user",
+      select: "username slug profileImage",
+    },
+  ]);
+  next();
+});
 
 const ReviewModel = model("Review", reviewSchema);
 export default ReviewModel;

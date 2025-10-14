@@ -74,4 +74,4 @@ export const deleteProduct = deleteOne(ProductModel, "Product");
 
 export const getAllProducts = getAll(ProductModel, "Product", "ProductModel");
 
-export const getSpecificProduct = getOne(ProductModel, "Product");
+export const getSpecificProduct = getOne(ProductModel, "Product","reviews");

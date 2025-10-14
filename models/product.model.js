@@ -74,23 +74,31 @@ const productSchema = new Schema(
       min: [0, "Ratings quantity must be at least 0"],
     },
   },
-  { timestamps: true }
+  { timestamps: true, 
+    // enable virtual populate fields
+    toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+
+productSchema.virtual("reviews", {
+  ref: "Review",
+  foreignField: "product",
+  localField: "_id",
+});
 
 // Mongoose query middleware
 productSchema.pre(/^find/, function (next) {
   this.populate([
     {
       path: "category",
-      select: "name _id slug",
+      select: "name slug",
     },
     {
       path: "subcategories",
-      select: "name _id slug",
+      select: "name slug",
     },
     {
       path: "brand",
-      select: "name _id slug",
+      select: "name slug",
     },
   ]);
   next();

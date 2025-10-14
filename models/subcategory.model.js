@@ -29,7 +29,7 @@ const subCategorySchema = new Schema(
 subCategorySchema.pre(/^find/, function (next) {
   this.populate({
     path: "category",
-    select: "name ",
+    select: "name slug",
   });
   next();
 });
