@@ -66,7 +66,6 @@ const productSchema = new Schema(
       min: [1, "Rating must be at least 1.0"],
       max: [5, "Rating must be at most 5.0"],
       set: (val) => Math.round(val * 10) / 10, // Round to 1 decimal place
-      default: 0,
     },
     ratingsQuantity: {
       type: Number,
@@ -74,9 +73,12 @@ const productSchema = new Schema(
       min: [0, "Ratings quantity must be at least 0"],
     },
   },
-  { timestamps: true, 
+  {
+    timestamps: true,
     // enable virtual populate fields
-    toJSON: { virtuals: true }, toObject: { virtuals: true } }
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
 );
 
 productSchema.virtual("reviews", {

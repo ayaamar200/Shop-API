@@ -70,16 +70,18 @@ export function getAll(Model, field, modelName = "") {
     if (req.filterObj) {
       filter = req.filterObj;
     }
-    
 
-    const countDocuments = await Model.countDocuments();
     const features = new APIFeatures(Model.find(filter), req.query)
-      .paginate(countDocuments)
       .filter()
-      .search(modelName)
-      .sort()
-      .limitFields();
+      .search(modelName);
 
+    // Count documents after filtering and searching
+    const countDocuments = await Model.countDocuments(
+      features.queryFilter || filter
+    );
+
+    // Then apply paginate, sort, limitFields, etc.
+    features.paginate(countDocuments).sort().limitFields();
     // Execute query
     const { mongooseQuery, metaData } = features;
     const allDocuments = await mongooseQuery;
