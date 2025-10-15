@@ -54,7 +54,7 @@ export const updateReviewValidator = [
       if (!review) {
         throw new Error(`Review Not Found for This id ${val}`);
       }
-      if (review.user.toString() !== req.user._id.toString()) {
+      if (review.user._id.toString() !== req.user._id.toString()) {
         throw new Error("You are not allowed to update this review");
       }
       return true;
@@ -88,7 +88,7 @@ export const deleteReviewValidator = [
           throw new Error(`Review Not Found for This id ${val}`);
         }
         // Check ownership
-        if (review.user.toString() !== req.user._id.toString()) {
+        if (review.user._id.toString() !== req.user._id.toString()) {
           throw new Error("You are not allowed to update this review");
         }
       }

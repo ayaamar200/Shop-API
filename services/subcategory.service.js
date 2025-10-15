@@ -38,14 +38,14 @@ export const imageProcessing = asyncHandler(async (req, res, next) => {
 
 // 1.Create SubCategory on Category
 export function setCategoryIdToBody(req, res, next) {
-  if (!req.body.category) req.body.category = req.params.category;
+  if (!req.body.category) req.body.category = req.params.categoryId;
   next();
 }
 
 // 2.Get all Subcategories on Category
 export function createFilterObj(req, res, next) {
   let filterObject = {};
-  if (req.params.category) filterObject = { category: req.params.category };
+  if (req.params.categoryId) filterObject = { category: req.params.categoryId };
   req.filterObj = filterObject;
   next();
 }

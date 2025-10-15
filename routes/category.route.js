@@ -15,11 +15,13 @@ import {
   imageProcessing,
 } from "../services/category.service.js";
 import subCategoryRoute from "./subcategory.route.js";
+import productRoutes from "./product.route.js";
 import { allowRoles, protect } from "../services/auth.service.js";
 
 const router = Router();
 
-router.use("/:category/subcategories", subCategoryRoute);
+router.use("/:categoryId/subcategories", subCategoryRoute);
+router.use("/:categoryId/products", productRoutes);
 
 router
   .route("/")

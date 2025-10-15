@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import ProductModel from "./product.model.js";
 const reviewSchema = new Schema(
   {
     review: {
@@ -32,6 +33,39 @@ reviewSchema.pre(/^find/, function (next) {
     },
   ]);
   next();
+});
+
+reviewSchema.statics.calcAverageRatingsAndQuantity = async function (
+  productId
+) {
+  const stats = await this.aggregate([
+    {
+      $match: { product: productId },
+    },
+    {
+      $group: {
+        _id: "$product",
+        nRating: { $sum: 1 },
+        avgRatings: { $avg: "$rating" },
+      },
+    },
+  ]);
+
+  if (stats.length > 0) {
+    await ProductModel.findByIdAndUpdate(productId, {
+      ratingsQuantity: stats[0].nRating,
+      ratingsAverage: stats[0].avgRatings,
+    });
+  } else {
+    await ProductModel.findByIdAndUpdate(productId, {
+      ratingsQuantity: 0,
+      ratingsAverage: 0,
+    });
+  }
+};
+
+reviewSchema.post("save", async function () {
+  await this.constructor.calcAverageRatingsAndQuantity(this.product);
 });
 
 const ReviewModel = model("Review", reviewSchema);

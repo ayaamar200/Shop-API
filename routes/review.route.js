@@ -1,10 +1,12 @@
 import { Router } from "express";
 
 import {
+  createFilterObj,
   createReview,
   deleteReview,
   getAllReviews,
   getSpecificReview,
+  setProductIdAndUserIdToBody,
   updateReview,
 } from "../services/review.service.js";
 import { allowRoles, protect } from "../services/auth.service.js";
@@ -15,12 +17,13 @@ import {
   updateReviewValidator,
 } from "../utils/validators/review.validator.js";
 
-const router = Router();
+const router = Router({ mergeParams: true });
+
 
 router
   .route("/")
-  .get(getAllReviews)
-  .post(protect, allowRoles("user"), createReviewValidator, createReview);
+  .get(createFilterObj,getAllReviews)
+  .post(protect, allowRoles("user"),setProductIdAndUserIdToBody, createReviewValidator, createReview);
 router
   .route("/:id")
   .get(getSpecificReviewValidator, getSpecificReview)

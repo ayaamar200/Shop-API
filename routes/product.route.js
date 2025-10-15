@@ -14,18 +14,24 @@ import {
   deleteProduct,
   uploadProductImage,
   imageProcessing,
+  setCategoryIdToBody,
+  createFilterObj,
 } from "../services/product.service.js";
+import reviewsRoutes from "./review.route.js";
 import { allowRoles, protect } from "../services/auth.service.js";
-const router = Router();
+const router = Router({ mergeParams: true });
+
+router.use("/:productId/reviews", reviewsRoutes);
 
 router
   .route("/")
-  .get(getAllProducts)
+  .get(createFilterObj, getAllProducts)
   .post(
     protect,
     allowRoles("admin"),
     uploadProductImage,
     imageProcessing,
+    setCategoryIdToBody,
     createProductValidator,
     createProduct
   );

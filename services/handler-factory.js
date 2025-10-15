@@ -70,6 +70,7 @@ export function getAll(Model, field, modelName = "") {
     if (req.filterObj) {
       filter = req.filterObj;
     }
+    
 
     const countDocuments = await Model.countDocuments();
     const features = new APIFeatures(Model.find(filter), req.query)
@@ -80,13 +81,13 @@ export function getAll(Model, field, modelName = "") {
       .limitFields();
 
     // Execute query
-    const { mongooseQuery, paginationResult } = features;
+    const { mongooseQuery, metaData } = features;
     const allDocuments = await mongooseQuery;
     res.status(200).json({
       status: "success",
       msg: `All ${field}`,
-      results: allDocuments.length,
-      paginationResult,
+      results: countDocuments,
+      metaData,
       data: allDocuments,
     });
   });

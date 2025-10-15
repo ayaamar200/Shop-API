@@ -66,6 +66,20 @@ export const imageProcessing = asyncHandler(async (req, res, next) => {
   next();
 });
 
+// 1.Create SubCategory on Category
+export function setCategoryIdToBody(req, res, next) {
+  if (!req.body.category) req.body.category = req.params.categoryId;
+  next();
+}
+
+// 2.Get all Subcategories on Category
+export function createFilterObj(req, res, next) {
+  let filterObject = {};
+  if (req.params.categoryId) filterObject = { category: req.params.categoryId };
+  req.filterObj = filterObject;
+  next();
+}
+
 export const createProduct = createOne(ProductModel, "Product");
 
 export const updateProduct = updateOne(ProductModel, "Product");
@@ -74,4 +88,4 @@ export const deleteProduct = deleteOne(ProductModel, "Product");
 
 export const getAllProducts = getAll(ProductModel, "Product", "ProductModel");
 
-export const getSpecificProduct = getOne(ProductModel, "Product","reviews");
+export const getSpecificProduct = getOne(ProductModel, "Product", "reviews");

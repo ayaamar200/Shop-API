@@ -66,7 +66,7 @@ const productSchema = new Schema(
       min: [1, "Rating must be at least 1.0"],
       max: [5, "Rating must be at most 5.0"],
       set: (val) => Math.round(val * 10) / 10, // Round to 1 decimal place
-      default: 4.5,
+      default: 0,
     },
     ratingsQuantity: {
       type: Number,

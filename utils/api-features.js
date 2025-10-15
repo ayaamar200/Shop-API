@@ -82,7 +82,7 @@ class APIFeatures {
     }
 
     this.mongooseQuery = this.mongooseQuery.skip(skip).limit(limit);
-    this.paginationResult = pagination;
+    this.metaData = pagination;
 
     return this;
   }
