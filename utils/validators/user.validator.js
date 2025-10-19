@@ -28,7 +28,7 @@ export const createUserValidator = [
       return new Promise((resolve, reject) => {
         UserModel.findOne({ email: val }).then((user) => {
           if (user) {
-            return reject(new Error("Email already exists"));
+            return reject(new Error("Account already exists"));
           }
           resolve(true);
         });
@@ -63,9 +63,7 @@ export const createUserValidator = [
       }
       return true;
     }),
-  check("rePassword")
-    .notEmpty()
-    .withMessage("User confirm password is required"),
+  check("rePassword").notEmpty().withMessage("Confirm password is required"),
   check("profileImage").optional(),
   check("role").optional(),
   validatorMiddleware,

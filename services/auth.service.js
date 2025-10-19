@@ -26,7 +26,7 @@ export const signup = asyncHandler(async (req, res, next) => {
   // 3- send response
   res.status(201).json({
     status: "success",
-    msg: "User Created Successfully",
+    msg: "Account Created Successfully",
     data: user,
     token,
   });
@@ -138,7 +138,6 @@ export const allowRoles = (...roles) =>
     next();
   });
 
-// Forget Password
 export const forgotPassword = asyncHandler(async (req, res, next) => {
   // 1- get user based on POSTed email
   const user = await UserModel.findOne({ email: req.body.email });
@@ -189,7 +188,6 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Verify Rest Code
 export const verifyResetCode = asyncHandler(async (req, res, next) => {
   // 1- get user based on rest code
   const hashedResetCode = crypto
@@ -217,7 +215,6 @@ export const verifyResetCode = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Reset Password
 export const resetPassword = asyncHandler(async (req, res, next) => {
   // 1- get user based on email
   const user = await UserModel.findOne({
