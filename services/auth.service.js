@@ -114,7 +114,10 @@ export const protect = asyncHandler(async (req, res, next) => {
 
   if (!currentUser.isActive) {
     return next(
-      new ApiError("Your account has been deactivated. You can reactivate it anytime by logging back in.", 403)
+      new ApiError(
+        "Your account has been deactivated. You can reactivate it anytime by logging back in.",
+        403
+      )
     );
   }
 

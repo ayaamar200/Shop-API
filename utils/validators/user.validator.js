@@ -10,6 +10,8 @@ export const createUserValidator = [
     .withMessage("User username is required")
     .isLength({ min: 3 })
     .withMessage("User username must be at least 3 characters long")
+    .isLength({ max: 32 })
+    .withMessage("User username must be at most 32 characters long")
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;
@@ -19,7 +21,7 @@ export const createUserValidator = [
     .notEmpty()
     .withMessage("User email is required")
     .isEmail()
-    .withMessage("User email is invalid")
+    .withMessage("Email is invalid")
     .custom((val) => {
       return new Promise((resolve, reject) => {
         UserModel.findOne({ email: val }).then((user) => {
@@ -81,6 +83,8 @@ export const updateUserValidator = [
     .optional()
     .isLength({ min: 3 })
     .withMessage("User username must be at least 3 characters long")
+    .isLength({ max: 32 })
+    .withMessage("User username must be at most 32 characters long")
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;

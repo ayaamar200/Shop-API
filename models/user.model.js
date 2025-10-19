@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 const userSchema = new Schema(
   {
@@ -6,6 +6,7 @@ const userSchema = new Schema(
       type: String,
       required: [true, " User name is required"],
       minlength: [3, "User name must be at least 3 characters"],
+      maxlength: [32, "User name must be at most 32 characters"],
       trim: true,
     },
     slug: {
@@ -49,6 +50,47 @@ const userSchema = new Schema(
       type: Boolean,
       default: true,
     },
+
+    // child references (1:M)
+    wishlist: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+        required: [true, "User must have a wishlist"],
+      },
+    ],
+
+    addresses: [
+      {
+        id: { type: mongoose.Schema.Types.ObjectId },
+        alias: {
+          type: String,
+          trim: true,
+          default: "Home",
+        },
+        details: {
+          type: String,
+          required: true,
+          trim: true,
+          minlength: [5, "Address details must be at least 5 characters"],
+        },
+        phone: {
+          type: String,
+          required: true,
+        },
+        city: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        governorate: {
+          type: String,
+          trim: true,
+          default: "",
+        },
+        postalCode: Number
+      },
+    ],
   },
   { timestamps: true }
 );

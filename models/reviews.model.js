@@ -16,6 +16,7 @@ const reviewSchema = new Schema(
       ref: "User",
       required: [true, "Review must belong to a user"],
     },
+    // parent reference (1:M)
     product: {
       type: Schema.Types.ObjectId,
       ref: "Product",
@@ -65,6 +66,10 @@ reviewSchema.statics.calcAverageRatingsAndQuantity = async function (
 };
 
 reviewSchema.post("save", async function () {
+  await this.constructor.calcAverageRatingsAndQuantity(this.product);
+});
+
+reviewSchema.post("deleteOne",{ document: true, query: false }, async function () {
   await this.constructor.calcAverageRatingsAndQuantity(this.product);
 });
 

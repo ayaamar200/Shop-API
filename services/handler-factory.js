@@ -5,11 +5,11 @@ import APIFeatures from "../utils/api-features.js";
 export function deleteOne(Model, field) {
   return asyncHandler(async (req, res, next) => {
     const { id } = req.params;
-    const document = await Model.findByIdAndDelete(id);
+    const document = await Model.findById(id);
     if (!document) {
       return next(new ApiError(`${field} Not Found for This id ${id}`, 404));
     }
-
+    await document.deleteOne();
     res.status(200).json({
       status: "success",
       msg: `${field} Deleted Successfully`,
@@ -25,6 +25,7 @@ export function updateOne(Model, field) {
     if (!document) {
       return next(new ApiError(`${field} Not Found for This id ${id}`, 404));
     }
+    document.save();
     res.status(200).json({
       status: "success",
       msg: `${field} Updated Successfully`,

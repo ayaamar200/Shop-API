@@ -15,14 +15,13 @@ import {
 import { allowRoles, protect } from "../services/auth.service.js";
 const router = Router();
 
-router
-  .route("/")
-  .get(getAllCoupons)
-  .post(protect, allowRoles("admin"), createCouponValidator, createCoupon);
+router.use(protect, allowRoles("admin"));
+
+router.route("/").get(getAllCoupons).post(createCouponValidator, createCoupon);
 router
   .route("/:id")
   .get(getCouponValidator, getCoupon)
-  .put(protect, allowRoles("admin"), updateCouponValidator, updateCoupon)
-  .delete(protect, allowRoles("admin"), deleteCouponValidator, deleteCoupon);
+  .put(updateCouponValidator, updateCoupon)
+  .delete(deleteCouponValidator, deleteCoupon);
 
 export default router;
