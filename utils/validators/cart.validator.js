@@ -1,6 +1,6 @@
 import { check } from "express-validator";
-import validatorMiddleware from "../../middlewares/validator.middleware";
-import ProductModel from "../../models/product.model";
+import validatorMiddleware from "../../middlewares/validator.middleware.js";
+import ProductModel from "../../models/product.model.js";
 
 export const addProductToCartValidator = [
   check("productId")

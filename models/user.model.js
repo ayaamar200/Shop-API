@@ -4,9 +4,9 @@ const userSchema = new Schema(
   {
     username: {
       type: String,
-      required: [true, " User name is required"],
-      minlength: [3, "User name must be at least 3 characters"],
-      maxlength: [32, "User name must be at most 32 characters"],
+      required: [true, " User Name is required"],
+      minlength: [3, "User Name must be at least 3 characters"],
+      maxlength: [32, "User Name must be at most 32 characters"],
       trim: true,
     },
     slug: {
@@ -16,21 +16,21 @@ const userSchema = new Schema(
     },
     email: {
       type: String,
-      unique: [true, "User email must be unique"],
-      required: [true, "User email is required"],
+      unique: [true, "Email Address must be unique"],
+      required: [true, "Email Address is required"],
       trim: true,
       lowercase: true,
     },
     phone: {
       type: String,
-      required: [true, "User phone is required"],
+      required: [true, "Phone number is required"],
       trim: true,
     },
     password: {
       type: String,
-      required: [true, "User password is required"],
+      required: [true, "Password is required"],
       trim: true,
-      minlength: [6, "User password must be at least 6 characters"],
+      minlength: [6, "Password must be at least 6 characters"],
     },
     passwordChangedAt: Date,
 
@@ -88,7 +88,7 @@ const userSchema = new Schema(
           trim: true,
           default: "",
         },
-        postalCode: Number
+        postalCode: Number,
       },
     ],
   },
