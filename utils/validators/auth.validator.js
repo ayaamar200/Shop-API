@@ -6,9 +6,11 @@ import UserModel from "../../models/user.model.js";
 export const signupValidator = [
   check("username")
     .notEmpty()
-    .withMessage("User username is required")
+    .withMessage("User Name is required")
     .isLength({ min: 3 })
-    .withMessage("User username must be at least 3 characters long")
+    .withMessage("User Name must be at least 3 characters long")
+    .isLength({ max: 32 })
+    .withMessage("User Name must be at most 32 characters long")
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;
@@ -16,28 +18,35 @@ export const signupValidator = [
 
   check("email")
     .notEmpty()
-    .withMessage("User email is required")
+    .withMessage("Email is required")
     .isEmail()
-    .withMessage("User email is invalid")
+    .withMessage("Invalid email address")
+    .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+    .withMessage("Email must end with a valid domain (e.g., .com, .net, .org)")
     .custom((val) => {
       return new Promise((resolve, reject) => {
         UserModel.findOne({ email: val }).then((user) => {
           if (user) {
-            return reject(new Error("Email already exists"));
+            return reject(new Error("Account already exists"));
           }
           resolve(true);
         });
       });
     }),
+
   check("phone")
     .notEmpty()
-    .withMessage("User phone is required")
-    .isMobilePhone(["ar-EG", "ar-SA", "en-US"])
-    .withMessage("User phone is invalid"),
+    .withMessage("Phone number is required")
+    .isMobilePhone("any")
+    .withMessage("Invalid phone number")
+    .matches(/^(\+?\d{1,3})?[-.\s]?\d{8,14}$/)
+    .withMessage(
+      "Invalid phone number format. Accepts local or international (e.g., +201001234567 or 01012345678)"
+    ),
 
   check("password")
     .notEmpty()
-    .withMessage("User password is required")
+    .withMessage("Password is required")
     .isStrongPassword({
       minLength: 6,
       minLowercase: 1,
@@ -46,7 +55,7 @@ export const signupValidator = [
       minSymbols: 1,
     })
     .withMessage(
-      "User password must contain at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 symbol"
+      "Password must contain at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 symbol"
     )
     .custom((password, { req }) => {
       if (password !== req.body.rePassword) {
@@ -55,9 +64,7 @@ export const signupValidator = [
       return true;
     }),
 
-  body("rePassword")
-    .notEmpty()
-    .withMessage("User confirm password is required"),
+  body("rePassword").notEmpty().withMessage("Confirm Password is required"),
   validatorMiddleware,
 ];
 

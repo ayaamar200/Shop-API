@@ -63,7 +63,7 @@ export const createUserValidator = [
       }
       return true;
     }),
-  check("rePassword").notEmpty().withMessage("Confirm password is required"),
+  check("rePassword").notEmpty().withMessage("Confirm Password is required"),
   check("profileImage").optional(),
   check("role").optional(),
   validatorMiddleware,
