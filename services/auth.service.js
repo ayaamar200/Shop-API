@@ -33,27 +33,33 @@ export const signup = asyncHandler(async (req, res, next) => {
 });
 
 export const login = asyncHandler(async (req, res, next) => {
-  // 1- check if user exists &  password is correct
   const { email, password } = req.body;
-  const user = await UserModel.findOne({ email });
-  const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
-  if (!user || !isPasswordCorrect) {
+  // 1- Check if user exists
+  const user = await UserModel.findOne({ email });
+  if (!user) {
     return next(new ApiError("Incorrect email or password", 401));
   }
 
+  // 2- Check password AFTER confirming the user exists
+  const isPasswordCorrect = await bcrypt.compare(password, user.password);
+  if (!isPasswordCorrect) {
+    return next(new ApiError("Incorrect email or password", 401));
+  }
+
+  // 3- Activate account if deactivated
   if (!user.isActive) {
     user.isActive = true;
     await user.save();
   }
 
-  // 3- generate Token
+  // 4- Generate Token
   const token = generateToken({
     id: user._id,
     username: user.username,
     role: user.role,
   });
-  // 4- send response
+
   res.status(200).json({
     status: "success",
     msg: "User Logged In Successfully",
