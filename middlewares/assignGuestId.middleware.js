@@ -1,20 +1,25 @@
-import { v4 as uuidv4 } from "uuid";
+// middleware/assignGuestId.middleware.js
+import { v4 as uuid } from "uuid";
 
-export const ensureGuestId = (req, res, next) => {
-  let guestId = req.cookies.guestId;
+export default function assignGuestId(req, res, next) {
+  // If user is logged in → skip guest logic
+  if (req.user) return next();
 
-  // Create only ONCE
-  if (!guestId) {
-    guestId = uuidv4();
+  // Check if guestId exists in cookies
+  if (!req.cookies.guestId) {
+    const newGuestId = uuid();
 
-    res.cookie("guestId", guestId, {
+    res.cookie("guestId", newGuestId, {
       httpOnly: true,
-      secure: false, // true in production
       sameSite: "lax",
+      secure: false,
       maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
     });
+
+    req.guestId = newGuestId;
+  } else {
+    req.guestId = req.cookies.guestId;
   }
 
-  req.guestId = guestId;
   next();
-};
+}

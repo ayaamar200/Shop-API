@@ -14,6 +14,7 @@ import dbConnection from "./config/database.js";
 // Routes
 import mountRoutes from "./routes/index.js";
 import cookieParser from "cookie-parser";
+import assignGuestId from "./middlewares/assignGuestId.middleware.js";
 
 // Establish Database Connection
 dbConnection();
@@ -33,6 +34,7 @@ app.use(
 // parse JSON Request Bodies
 app.use(json());
 app.use(cookieParser());
+app.use(assignGuestId); // This ensures guestId is always set
 
 // Recreate __dirname
 const __filename = fileURLToPath(import.meta.url);
