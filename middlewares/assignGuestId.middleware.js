@@ -11,8 +11,8 @@ export default function assignGuestId(req, res, next) {
 
     res.cookie("guestId", newGuestId, {
       httpOnly: true,
-      sameSite: "lax",
-      secure: false,
+      sameSite: "none",
+      secure: true,
       maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
     });
 
