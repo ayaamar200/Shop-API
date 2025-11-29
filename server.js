@@ -24,9 +24,10 @@ app.use(
   cors({
     origin: "http://localhost:4200",
     methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
-); // Enable CORS
+);
 
 // Middlewares
 // parse JSON Request Bodies
