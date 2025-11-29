@@ -13,6 +13,7 @@ import dbConnection from "./config/database.js";
 
 // Routes
 import mountRoutes from "./routes/index.js";
+import cookieParser from "cookie-parser";
 
 // Establish Database Connection
 dbConnection();
@@ -30,6 +31,7 @@ app.use(
 // Middlewares
 // parse JSON Request Bodies
 app.use(json());
+app.use(cookieParser());
 
 // Recreate __dirname
 const __filename = fileURLToPath(import.meta.url);

@@ -7,6 +7,7 @@ const cartSchema = new Schema(
         product: {
           type: Schema.Types.ObjectId,
           ref: "Product",
+          required: true,
         },
         quantity: {
           type: Number,
@@ -18,14 +19,16 @@ const cartSchema = new Schema(
     ],
     totalCartPrice: Number,
     totalPriceAfterDiscount: Number,
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
+
+    // Only guest cart
+    guestId: {
+      type: String,
+      required: true,
+      index: true,
     },
   },
   { timestamps: true }
 );
 
 const CartModel = model("Cart", cartSchema);
-
 export default CartModel;

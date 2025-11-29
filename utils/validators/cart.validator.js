@@ -20,16 +20,25 @@ export const addProductToCartValidator = [
     .optional()
     .isString()
     .withMessage("Color must be a valid string"),
+
   validatorMiddleware,
 ];
 
 export const removeSpecificCartItemValidator = [
-  check("cartItemId").isMongoId().withMessage("Invalid cart item ID format"),
+  check("cartItemId")
+    .notEmpty()
+    .withMessage("Cart item ID is required")
+    .isMongoId()
+    .withMessage("Invalid cart item ID format"),
   validatorMiddleware,
 ];
 
 export const updateCartItemQuantityValidator = [
-  check("cartItemId").isMongoId().withMessage("Invalid cart item ID format"),
+  check("cartItemId")
+    .notEmpty()
+    .withMessage("Cart item ID is required")
+    .isMongoId()
+    .withMessage("Invalid cart item ID format"),
   check("quantity")
     .notEmpty()
     .withMessage("Quantity is required")

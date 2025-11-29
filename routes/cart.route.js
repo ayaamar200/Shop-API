@@ -1,11 +1,10 @@
 import { Router } from "express";
 
-import { allowRoles, protect } from "../services/auth.service.js";
 import {
   addProductToCart,
   applyCoupon,
-  clearUserCart,
-  getLoggedUserCarts,
+  clearCart,
+  getCart,
   removeSpecificCartItem,
   updateCartItemQuantity,
 } from "../services/cart.service.js";
@@ -15,18 +14,21 @@ import {
   removeSpecificCartItemValidator,
   updateCartItemQuantityValidator,
 } from "../utils/validators/cart.validator.js";
+import assignGuestId from "../middlewares/assignGuestId.middleware.js";
+import { allowRoles, protect } from "../services/auth.service.js";
 
 const router = Router();
 
-router.use(protect, allowRoles("user"));
-
+router.use(assignGuestId);
 router
   .route("/")
   .post(addProductToCartValidator, addProductToCart)
-  .get(getLoggedUserCarts)
-  .delete(clearUserCart);
+  .get(getCart)
+  .delete(clearCart);
 
-router.route("/applyCoupon").put(applyCouponValidator, applyCoupon);
+router
+  .route("/applyCoupon")
+  .put(protect, allowRoles("user"), applyCouponValidator, applyCoupon);
 
 router
   .route("/:cartItemId")
