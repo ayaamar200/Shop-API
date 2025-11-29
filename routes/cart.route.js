@@ -14,7 +14,6 @@ import {
   removeSpecificCartItemValidator,
   updateCartItemQuantityValidator,
 } from "../utils/validators/cart.validator.js";
-import assignGuestId from "../middlewares/assignGuestId.middleware.js";
 import { allowRoles, protect } from "../services/auth.service.js";
 
 const router = Router();
