@@ -22,6 +22,7 @@ const productSchema = new Schema(
     },
     quantity: {
       type: Number,
+      default: 0,
       required: [true, "Product quantity is required"],
       min: [0, "Product quantity must be at least 0"],
     },

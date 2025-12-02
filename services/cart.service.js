@@ -19,6 +19,11 @@ export const addProductToCart = asyncHandler(async (req, res, next) => {
 
   const productModel = await ProductModel.findById(productId);
 
+  // product sold out??
+  if (!productModel || productModel.quantity <= 0) {
+    return next(new ApiError("Product is sold out", 404));
+  }
+
   let cart = await CartModel.findOne({ guestId });
   if (!cart) {
     // create cart for user
@@ -135,8 +140,7 @@ export const updateCartItemQuantity = asyncHandler(async (req, res, next) => {
 });
 
 export const applyCoupon = asyncHandler(async (req, res, next) => {
-  if (!req.user)
-    return next(new ApiError("Only logged-in users can apply coupons", 401));
+  const guestId = req.guestId;
 
   const coupon = await CouponModel.findOne({
     name: req.body.coupon,
@@ -145,7 +149,7 @@ export const applyCoupon = asyncHandler(async (req, res, next) => {
   if (!coupon) {
     return next(new ApiError("Invalid or expired Coupon", 404));
   }
-  const cart = await CartModel.findOne({ user: req.user._id });
+  const cart = await CartModel.findOne({ guestId });
   if (!cart) {
     return next(new ApiError("Cart not found", 404));
   }

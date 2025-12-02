@@ -14,7 +14,7 @@ import {
   removeSpecificCartItemValidator,
   updateCartItemQuantityValidator,
 } from "../utils/validators/cart.validator.js";
-import { allowRoles, protect } from "../services/auth.service.js";
+// import { allowRoles, protect } from "../services/auth.service.js";
 
 const router = Router();
 
@@ -24,9 +24,7 @@ router
   .get(getCart)
   .delete(clearCart);
 
-router
-  .route("/applyCoupon")
-  .put(protect, allowRoles("user"), applyCouponValidator, applyCoupon);
+router.route("/applyCoupon").put(applyCouponValidator, applyCoupon);
 
 router
   .route("/:cartItemId")
