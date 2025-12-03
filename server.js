@@ -16,12 +16,15 @@ import dbConnection from "./config/database.js";
 import mountRoutes from "./routes/index.js";
 import cookieParser from "cookie-parser";
 import assignGuestId from "./middlewares/assignGuestId.middleware.js";
+import { type } from "os";
+import { webhookCheckout } from "./services/order.service.js";
 
 // Establish Database Connection
 dbConnection();
 
 // App Configuration
 const app = express();
+app.use(json());
 
 // const allowedOrigins = [
 //   "http://localhost:4200", // local dev
@@ -49,9 +52,16 @@ app.options("/{*splat}", cors());
 // compress all responses
 app.use(compression());
 
+app.post(
+  "/webhook-checkout",
+  express.raw({
+    type: "application/json",
+  }),
+  webhookCheckout
+);
+
 // Middlewares
 // parse JSON Request Bodies
-app.use(json());
 app.use(cookieParser());
 app.use(assignGuestId); // This ensures guestId is always set
 
