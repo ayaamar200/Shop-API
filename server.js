@@ -16,7 +16,7 @@ import dbConnection from "./config/database.js";
 import mountRoutes from "./routes/index.js";
 import cookieParser from "cookie-parser";
 import assignGuestId from "./middlewares/assignGuestId.middleware.js";
-import { type } from "os";
+
 import { webhookCheckout } from "./services/order.service.js";
 
 // Establish Database Connection
@@ -24,7 +24,13 @@ dbConnection();
 
 // App Configuration
 const app = express();
-app.use(json());
+app.post(
+  "/webhook-checkout",
+  express.raw({
+    type: "application/json",
+  }),
+  webhookCheckout
+);
 
 // const allowedOrigins = [
 //   "http://localhost:4200", // local dev
@@ -52,13 +58,7 @@ app.options("/{*splat}", cors());
 // compress all responses
 app.use(compression());
 
-app.post(
-  "/webhook-checkout",
-  express.raw({
-    type: "application/json",
-  }),
-  webhookCheckout
-);
+app.use(json());
 
 // Middlewares
 // parse JSON Request Bodies
