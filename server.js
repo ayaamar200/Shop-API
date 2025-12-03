@@ -3,6 +3,7 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import express, { json } from "express";
 import cors from "cors";
+import compression from "compression";
 import { config } from "dotenv";
 import morgan from "morgan";
 
@@ -21,27 +22,32 @@ dbConnection();
 
 // App Configuration
 const app = express();
-const allowedOrigins = [
-  "http://localhost:4200", // local dev
-  "https://electro-elhany.vercel.app", // production frontend
-];
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // allow requests with no origin (like Postman)
-      if (!origin) return callback(null, true);
 
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg = `The CORS policy for this site does not allow access from the specified Origin.`;
-        return callback(new Error(msg), false);
-      }
-      return callback(null, true);
-    },
-    credentials: true,
-  })
-);
+// const allowedOrigins = [
+//   "http://localhost:4200", // local dev
+//   "https://electro-elhany.vercel.app", // production frontend
+// ];
+// app.use(
+//   cors({
+//     origin: function (origin, callback) {
+//       // allow requests with no origin (like Postman)
+//       if (!origin) return callback(null, true);
 
+//       if (allowedOrigins.indexOf(origin) === -1) {
+//         const msg = `The CORS policy for this site does not allow access from the specified Origin.`;
+//         return callback(new Error(msg), false);
+//       }
+//       return callback(null, true);
+//     },
+//     credentials: true,
+//   })
+// );
+
+// Enable CORS for all routes (Frontend)
+app.use(cors({}));
 app.options("/{*splat}", cors());
+// compress all responses
+app.use(compression());
 
 // Middlewares
 // parse JSON Request Bodies
