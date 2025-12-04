@@ -154,8 +154,8 @@ export const checkoutSession = asyncHandler(async (req, res, next) => {
       },
     ],
     mode: "payment",
-    success_url: `${req.protocol}://${req.get("host")}/api/v1/orders`,
-    cancel_url: `${req.protocol}://${req.get("host")}/api/v1/cart`,
+    success_url: `${req.protocol}://${req.get("host")}/all-orders`,
+    cancel_url: `${req.protocol}://${req.get("host")}/cart`,
     customer_email: req.body.contactEmail,
     client_reference_id: req.params.cartId,
     metadata: {
@@ -165,6 +165,43 @@ export const checkoutSession = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({ status: "success", session });
 });
+
+const createCardOrder = async (session) => {
+  const cart = await CartModel.findOne({
+    _id: session.client_reference_id,
+  });
+
+  if (!cart) {
+    return next(new ApiError("No cart found", 404));
+  }
+
+  // 2) Calculate order price
+  const taxPrice = 0;
+  const shippingPrice = 0;
+
+  const orderPrice = cart.totalPriceAfterDiscount
+    ? cart.totalPriceAfterDiscount
+    : cart.totalCartPrice;
+
+  const totalOrderPrice = orderPrice + taxPrice + shippingPrice;
+
+  // create order
+  const order = await OrderModel.create({
+    guestId: cart.guestId,
+    orderItems: cart.cartItems,
+    shippingAddress: cart.shippingAddress,
+    paymentMethod: "card",
+    itemsPrice: orderPrice,
+    taxPrice,
+    shippingPrice,
+    totalPrice: totalOrderPrice,
+  });
+
+  // 5) Clear cart
+  await CartModel.deleteOne({ _id: session.client_reference_id });
+
+  return order;
+};
 
 export const webhookCheckout = asyncHandler(async (req, res, next) => {
   const sig = req.headers["stripe-signature"];
