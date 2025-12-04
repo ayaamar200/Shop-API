@@ -13,7 +13,7 @@ import { allowRoles, protect } from "../services/auth.service.js";
 
 const router = Router();
 
-router.get("/checkout-session/:cartId", checkoutSession);
+router.post("/checkout-session/:cartId", checkoutSession);
 
 router.route("/").get(filterOrders, getAllOrders);
 router
