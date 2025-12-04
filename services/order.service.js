@@ -170,7 +170,7 @@ const createCardOrder = async (session) => {
   const shippingAddress = session.metadata;
   const orderPrice = session.amount_total / 100;
 
-  const cart = await cart.findOne(cartId);
+  const cart = await CartModel.findOne(cartId);
   // create order
   const order = await OrderModel.create({
     guestId: cart.guestId,
