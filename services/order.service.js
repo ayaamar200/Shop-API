@@ -153,8 +153,8 @@ export const checkoutSession = asyncHandler(async (req, res, next) => {
       },
     ],
     mode: "payment",
-    success_url: `${MY_DOMAIN}/all-orders`,
-    cancel_url: `${MY_DOMAIN}}/cart`,
+    success_url: `${process.env.MY_DOMAIN}/all-orders`,
+    cancel_url: `${process.env.MY_DOMAIN}}/cart`,
     customer_email: req.body.contactEmail,
     client_reference_id: req.params.cartId,
     metadata: {
