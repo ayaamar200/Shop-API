@@ -176,8 +176,6 @@ const createCardOrder = async (session) => {
     guestId: cart.guestId,
     orderItems: cart.cartItems,
     shippingAddress,
-    taxPrice,
-    shippingPrice,
     totalOrderPrice: orderPrice,
     isPaid: true,
     paidAt: Date.now(),
