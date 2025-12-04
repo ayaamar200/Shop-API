@@ -20,7 +20,6 @@ export const createCashOrder = asyncHandler(async (req, res, next) => {
   // 1) Get cart by cartId AND guestId (security)
   const cart = await CartModel.findOne({
     _id: req.params.cartId,
-    guestId: guestId,
   });
 
   if (!cart) {
@@ -167,40 +166,40 @@ export const checkoutSession = asyncHandler(async (req, res, next) => {
 });
 
 const createCardOrder = async (session) => {
-  const cart = await CartModel.findOne({
-    _id: session.client_reference_id,
-  });
+  const cartId = session.client_reference_id;
+  const shippingAddress = session.metadata;
+  const orderPrice = session.amount_total / 100;
 
-  if (!cart) {
-    return next(new ApiError("No cart found", 404));
-  }
-
-  // 2) Calculate order price
-  const taxPrice = 0;
-  const shippingPrice = 0;
-
-  const orderPrice = cart.totalPriceAfterDiscount
-    ? cart.totalPriceAfterDiscount
-    : cart.totalCartPrice;
-
-  const totalOrderPrice = orderPrice + taxPrice + shippingPrice;
-
+  const cart = await cart.findOne(cartId);
   // create order
   const order = await OrderModel.create({
     guestId: cart.guestId,
     orderItems: cart.cartItems,
-    shippingAddress: cart.shippingAddress,
-    paymentMethod: "card",
-    itemsPrice: orderPrice,
+    shippingAddress,
     taxPrice,
     shippingPrice,
-    totalPrice: totalOrderPrice,
+    totalOrderPrice: orderPrice,
+    isPaid: true,
+    paidAt: Date.now(),
+    paymentMethod: "card",
   });
 
-  // 5) Clear cart
-  await CartModel.deleteOne({ _id: session.client_reference_id });
+  if (order) {
+    const bulkOptions = order.orderItems.map((item) => ({
+      updateOne: {
+        filter: {
+          _id: item.product,
+          quantity: { $gte: item.quantity },
+        },
+        update: { $inc: { quantity: -item.quantity, sold: +item.quantity } },
+      },
+    }));
 
-  return order;
+    await ProductModel.bulkWrite(bulkOptions, {});
+  }
+
+  // 5) Clear cart
+  await CartModel.findByIdAndDelete(cartId);
 };
 
 export const webhookCheckout = asyncHandler(async (req, res, next) => {
@@ -215,17 +214,14 @@ export const webhookCheckout = asyncHandler(async (req, res, next) => {
       process.env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
-    console.log("Webhook signature verification failed.");
+    // console.log("Webhook signature verification failed.");
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
   // Check event type
   if (event.type === "checkout.session.completed") {
-    console.log("create order here...");
-
-    // const session = event.data.object;
-    // await createCardOrder(session);
+    await createCardOrder(event.data.object);
   }
 
-  // res.status(200).json({ received: true });
+  res.status(200).json({ received: true });
 });
