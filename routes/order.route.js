@@ -20,6 +20,8 @@ router
   .route("/admin")
   .get(protect, allowRoles("admin"), filterOrders, getAllOrders);
 
+router.route("/:id").get(getOrder);
+
 router.route("/:id/pay").put(protect, allowRoles("admin"), updateOrderToPaid);
 router
   .route("/:id/delivered")

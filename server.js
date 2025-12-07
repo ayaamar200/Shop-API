@@ -42,11 +42,8 @@ app.use(
       // allow requests with no origin (like Postman)
       if (!origin) return callback(null, true);
 
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg = `The CORS policy for this site does not allow access from the specified Origin.`;
-        return callback(new Error(msg), false);
-      }
-      return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error(`CORS blocked: ${origin}`));
     },
     credentials: true,
   })
@@ -54,7 +51,7 @@ app.use(
 
 // Enable CORS for all routes (Frontend)
 // app.use(cors({}));
-app.options("/{*splat}", cors());
+app.options("/{*splat}", cors({ origin: allowedOrigins, credentials: true }));
 // compress all responses
 app.use(compression());
 
