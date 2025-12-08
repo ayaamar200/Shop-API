@@ -47,6 +47,7 @@ const productSchema = new Schema(
       required: [true, "Product image cover is required"],
     },
     images: [String],
+    colors: [String],
     category: {
       type: Schema.Types.ObjectId,
       ref: "Category",
