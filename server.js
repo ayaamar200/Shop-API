@@ -32,15 +32,60 @@ app.post(
   webhookCheckout
 );
 
-// Enable CORS for all routes - allow any domain
+// Secure CORS configuration - whitelist approach
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",").map((origin) => origin.trim())
+  : [];
+
+// In development, allow localhost origins
+if (process.env.NODE_ENV === "development") {
+  allowedOrigins.push(
+    "http://localhost:3000",
+    "http://localhost:4200",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:4200"
+  );
+}
+
+// Enable CORS for all routes
 app.use(
   cors({
-    origin: true, // Allow all origins
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps, Postman, curl)
+      if (!origin) return callback(null, true);
+
+      // Check if origin is in whitelist
+      if (allowedOrigins.length === 0) {
+        // If no origins configured, allow all (not recommended for production)
+        console.warn(
+          "WARNING: No ALLOWED_ORIGINS configured. Allowing all origins."
+        );
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // Origin not allowed
+      return callback(
+        new Error(`CORS blocked: ${origin} is not allowed. Configure ALLOWED_ORIGINS in .env`)
+      );
+    },
     credentials: true,
   })
 );
 
-app.options("/{*splat}", cors({ origin: true, credentials: true }));
+app.options("/{*splat}", cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(null, false);
+  },
+  credentials: true,
+}));
 // compress all responses
 app.use(compression());
 

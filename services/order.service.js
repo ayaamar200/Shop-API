@@ -19,13 +19,26 @@ export const createCashOrder = asyncHandler(async (req, res, next) => {
     );
   }
 
-  // 1) Get cart by cartId
-  const cart = await CartModel.findOne({
-    _id: req.params.cartId,
-  });
+  // 1) Get cart by cartId AND verify ownership (security fix)
+  const cartFilter = { _id: req.params.cartId };
+  
+  // Verify cart belongs to current user or guest
+  if (req.user) {
+    cartFilter.user = req.user._id;
+  } else if (req.guestId) {
+    cartFilter.guestId = req.guestId;
+  } else {
+    return next(
+      new ApiError("Authentication or guest session required", 401)
+    );
+  }
+
+  const cart = await CartModel.findOne(cartFilter);
 
   if (!cart) {
-    return next(new ApiError("No cart found", 404));
+    return next(
+      new ApiError("Cart not found or you don't have permission to access it", 404)
+    );
   }
 
   // 2) Calculate order price
@@ -91,7 +104,59 @@ export const filterOrders = asyncHandler(async (req, res, next) => {
 
 export const getAllOrders = getAll(OrderModel, "Orders");
 
-export const getOrder = getOne(OrderModel, "Order");
+// Secure getOrder with ownership verification (security fix)
+export const getOrder = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  // Find the order
+  const order = await OrderModel.findById(id);
+  if (!order) {
+    return next(new ApiError("Order not found", 404));
+  }
+
+  // Verify ownership/access
+  // Admin can access any order
+  if (req.user && req.user.role === "admin") {
+    return res.status(200).json({
+      status: "success",
+      message: "Order found",
+      data: order,
+    });
+  }
+
+  // Logged-in user can only access their own orders
+  if (req.user) {
+    if (order.user && order.user.toString() === req.user._id.toString()) {
+      return res.status(200).json({
+        status: "success",
+        message: "Order found",
+        data: order,
+      });
+    }
+    return next(
+      new ApiError("You do not have permission to access this order", 403)
+    );
+  }
+
+  // Guest can only access orders with their guestId
+  if (req.guestId) {
+    if (order.guestId === req.guestId) {
+      return res.status(200).json({
+        status: "success",
+        message: "Order found",
+        data: order,
+      });
+    }
+    return next(
+      new ApiError("You do not have permission to access this order", 403)
+    );
+  }
+
+  // No authentication and no guestId - require authentication
+  return next(
+    new ApiError("Authentication required to access orders", 401)
+  );
+});
 
 export const updateOrderToPaid = asyncHandler(async (req, res, next) => {
   const order = await OrderModel.findById(req.params.id);
@@ -126,12 +191,26 @@ export const updateOrderToDelivered = asyncHandler(async (req, res, next) => {
 
 // online Payment
 export const checkoutSession = asyncHandler(async (req, res, next) => {
-  const cart = await CartModel.findOne({
-    _id: req.params.cartId,
-  });
+  // Verify cart ownership (security fix)
+  const cartFilter = { _id: req.params.cartId };
+  
+  // Verify cart belongs to current user or guest
+  if (req.user) {
+    cartFilter.user = req.user._id;
+  } else if (req.guestId) {
+    cartFilter.guestId = req.guestId;
+  } else {
+    return next(
+      new ApiError("Authentication or guest session required", 401)
+    );
+  }
+
+  const cart = await CartModel.findOne(cartFilter);
 
   if (!cart) {
-    return next(new ApiError("No cart found", 404));
+    return next(
+      new ApiError("Cart not found or you don't have permission to access it", 404)
+    );
   }
 
   // Determine contact email for Stripe session
