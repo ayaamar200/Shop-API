@@ -14,21 +14,31 @@ import {
   removeSpecificCartItemValidator,
   updateCartItemQuantityValidator,
 } from "../utils/validators/cart.validator.js";
-// import { allowRoles, protect } from "../services/auth.service.js";
+import { attachUserIfAuthenticated } from "../services/auth.service.js";
 
 const router = Router();
 
 router
   .route("/")
-  .post(addProductToCartValidator, addProductToCart)
-  .get(getCart)
-  .delete(clearCart);
+  .post(attachUserIfAuthenticated, addProductToCartValidator, addProductToCart)
+  .get(attachUserIfAuthenticated, getCart)
+  .delete(attachUserIfAuthenticated, clearCart);
 
-router.route("/applyCoupon").put(applyCouponValidator, applyCoupon);
+router
+  .route("/applyCoupon")
+  .put(attachUserIfAuthenticated, applyCouponValidator, applyCoupon);
 
 router
   .route("/:cartItemId")
-  .put(updateCartItemQuantityValidator, updateCartItemQuantity)
-  .delete(removeSpecificCartItemValidator, removeSpecificCartItem);
+  .put(
+    attachUserIfAuthenticated,
+    updateCartItemQuantityValidator,
+    updateCartItemQuantity
+  )
+  .delete(
+    attachUserIfAuthenticated,
+    removeSpecificCartItemValidator,
+    removeSpecificCartItem
+  );
 
 export default router;

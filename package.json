@@ -34,5 +34,8 @@
   "devDependencies": {
     "cross-env": "^10.0.0",
     "eslint": "^9.34.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }

@@ -24,10 +24,16 @@ const cartSchema = new Schema(
     },
     totalPriceAfterDiscount: Number,
 
-    // Only guest cart
+    // Guest cart identifier (for non-logged-in users)
     guestId: {
       type: String,
-      required: true,
+      index: true,
+    },
+
+    // Logged-in user cart
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
       index: true,
     },
   },

@@ -13,9 +13,16 @@ const calcTotalCartPrice = (cart) => {
   return cart.totalCartPrice;
 };
 
+const buildCartFilter = (req) => {
+  if (req.user) {
+    return { user: req.user._id };
+  }
+
+  return { guestId: req.guestId };
+};
+
 export const addProductToCart = asyncHandler(async (req, res, next) => {
   const { productId, color } = req.body;
-  const guestId = req.guestId;
 
   const productModel = await ProductModel.findById(productId);
 
@@ -24,11 +31,13 @@ export const addProductToCart = asyncHandler(async (req, res, next) => {
     return next(new ApiError("Product is sold out", 404));
   }
 
-  let cart = await CartModel.findOne({ guestId });
+  const filter = buildCartFilter(req);
+
+  let cart = await CartModel.findOne(filter);
   if (!cart) {
-    // create cart for user
+    // create cart for guest or logged-in user
     cart = await CartModel.create({
-      guestId,
+      ...filter,
       cartItems: [{ product: productId, color, price: productModel.price }],
     });
   } else {
@@ -60,11 +69,9 @@ export const addProductToCart = asyncHandler(async (req, res, next) => {
 });
 
 export const getCart = asyncHandler(async (req, res, next) => {
-  const guestId = req.guestId;
+  const filter = buildCartFilter(req);
 
-  const cart = await CartModel.findOne({ guestId }).populate(
-    "cartItems.product"
-  );
+  const cart = await CartModel.findOne(filter).populate("cartItems.product");
   if (!cart)
     return res.status(200).json({ status: "success", data: { cartItems: [] } });
 
@@ -76,9 +83,9 @@ export const getCart = asyncHandler(async (req, res, next) => {
 });
 
 export const removeSpecificCartItem = asyncHandler(async (req, res, next) => {
-  const guestId = req.guestId;
+  const filter = buildCartFilter(req);
   const cart = await CartModel.findOneAndUpdate(
-    { guestId },
+    filter,
     {
       $pull: {
         cartItems: {
@@ -104,9 +111,9 @@ export const removeSpecificCartItem = asyncHandler(async (req, res, next) => {
 });
 
 export const clearCart = asyncHandler(async (req, res, next) => {
-  const guestId = req.guestId;
+  const filter = buildCartFilter(req);
 
-  await CartModel.findOneAndDelete({ guestId });
+  await CartModel.findOneAndDelete(filter);
   res.status(200).json({
     status: "success",
   });
@@ -114,11 +121,9 @@ export const clearCart = asyncHandler(async (req, res, next) => {
 
 export const updateCartItemQuantity = asyncHandler(async (req, res, next) => {
   const { quantity } = req.body;
-  const guestId = req.guestId;
+  const filter = buildCartFilter(req);
 
-  const cart = await CartModel.findOne({ guestId }).populate(
-    "cartItems.product"
-  );
+  const cart = await CartModel.findOne(filter).populate("cartItems.product");
   if (!cart) {
     return next(new ApiError("Cart not found", 404));
   }
@@ -140,7 +145,7 @@ export const updateCartItemQuantity = asyncHandler(async (req, res, next) => {
 });
 
 export const applyCoupon = asyncHandler(async (req, res, next) => {
-  const guestId = req.guestId;
+  const filter = buildCartFilter(req);
 
   const coupon = await CouponModel.findOne({
     name: req.body.coupon,
@@ -149,7 +154,7 @@ export const applyCoupon = asyncHandler(async (req, res, next) => {
   if (!coupon) {
     return next(new ApiError("Invalid or expired Coupon", 404));
   }
-  const cart = await CartModel.findOne({ guestId });
+  const cart = await CartModel.findOne(filter);
   if (!cart) {
     return next(new ApiError("Cart not found", 404));
   }

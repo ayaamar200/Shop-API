@@ -9,25 +9,34 @@ import {
   updateOrderToPaid,
 } from "../services/order.service.js";
 
-import { allowRoles, protect } from "../services/auth.service.js";
+import {
+  allowRoles,
+  protect,
+  attachUserIfAuthenticated,
+} from "../services/auth.service.js";
 
 const router = Router();
 
-router.post("/checkout-session/:cartId", checkoutSession);
+router.post(
+  "/checkout-session/:cartId",
+  attachUserIfAuthenticated,
+  checkoutSession
+);
 
-router.route("/").get(filterOrders, getAllOrders);
+router.route("/").get(attachUserIfAuthenticated, filterOrders, getAllOrders);
 router
   .route("/admin")
   .get(protect, allowRoles("admin"), filterOrders, getAllOrders);
 
-router.route("/:id").get(getOrder);
 
 router.route("/:id/pay").put(protect, allowRoles("admin"), updateOrderToPaid);
 router
   .route("/:id/delivered")
   .put(protect, allowRoles("admin"), updateOrderToDelivered);
 
-router.route("/:id").get(getOrder);
+router.route("/:id").get(attachUserIfAuthenticated, getOrder);
 
-router.route("/:cartId").post(createCashOrder);
+router
+  .route("/:cartId")
+  .post(attachUserIfAuthenticated, createCashOrder);
 export default router;

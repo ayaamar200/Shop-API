@@ -32,26 +32,15 @@ app.post(
   webhookCheckout
 );
 
-const allowedOrigins = [
-  "http://localhost:4200", // local dev
-  "https://electro-elhany.vercel.app", // production frontend
-];
+// Enable CORS for all routes - allow any domain
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // allow requests with no origin (like Postman)
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      return callback(new Error(`CORS blocked: ${origin}`));
-    },
+    origin: true, // Allow all origins
     credentials: true,
   })
 );
 
-// Enable CORS for all routes (Frontend)
-// app.use(cors({}));
-app.options("/{*splat}", cors({ origin: allowedOrigins, credentials: true }));
+app.options("/{*splat}", cors({ origin: true, credentials: true }));
 // compress all responses
 app.use(compression());
 

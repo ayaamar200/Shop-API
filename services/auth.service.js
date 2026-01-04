@@ -7,6 +7,7 @@ import UserModel from "../models/user.model.js";
 import sendEmail from "../utils/send-email.js";
 import jwt from "jsonwebtoken";
 import generateToken from "../utils/generate-token.js";
+import CartModel from "../models/cart.model.js";
 
 export const signup = asyncHandler(async (req, res, next) => {
   // 1- create user
@@ -17,7 +18,15 @@ export const signup = asyncHandler(async (req, res, next) => {
     phone: req.body.phone,
     password: req.body.password,
   });
-  // 2- generate Token
+
+  // 2- If there is a guest cart, attach it to this new user
+  if (req.guestId) {
+    await CartModel.updateMany(
+      { guestId: req.guestId },
+      { $set: { user: user._id }, $unset: { guestId: "" } }
+    );
+  }
+  // 3- generate Token
   const token = generateToken({
     id: user._id,
     username: user.username,
@@ -53,7 +62,15 @@ export const login = asyncHandler(async (req, res, next) => {
     await user.save();
   }
 
-  // 4- Generate Token
+  // 4- If there is a guest cart, attach it to this user so they can see it when logged in
+  if (req.guestId) {
+    await CartModel.updateMany(
+      { guestId: req.guestId },
+      { $set: { user: user._id }, $unset: { guestId: "" } }
+    );
+  }
+
+  // 5- Generate Token
   const token = generateToken({
     id: user._id,
     username: user.username,
@@ -131,6 +148,39 @@ export const protect = asyncHandler(async (req, res, next) => {
 
   next();
 });
+
+// Attach user to request if a valid JWT exists, but do not require authentication
+export const attachUserIfAuthenticated = asyncHandler(
+  async (req, res, next) => {
+    let token;
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
+    }
+
+    if (!token) {
+      return next();
+    }
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+      const currentUser = await UserModel.findById(decoded.userData.id);
+
+      if (!currentUser || !currentUser.isActive) {
+        return next();
+      }
+
+      req.user = currentUser;
+    } catch {
+      // If token is invalid/expired we just continue as a guest
+      
+    }
+
+    next();
+  }
+);
 
 // User Permissions
 export const allowRoles = (...roles) =>

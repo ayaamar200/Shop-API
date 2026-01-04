@@ -5,11 +5,17 @@ const orderSchema = new Schema(
     // Guest identifier (same guestId stored in cookies)
     guestId: {
       type: String,
-      required: true,
       index: true,
     },
 
-    // Items coming from the guest cart
+    // Logged-in user reference (for user orders)
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      index: true,
+    },
+
+    // Items coming from the guest or user cart
     orderItems: [
       {
         product: {

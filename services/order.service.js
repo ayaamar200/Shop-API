@@ -8,16 +8,18 @@ import stripe from "../utils/stripe.js";
 
 // Cash Payment
 export const createCashOrder = asyncHandler(async (req, res, next) => {
-  const guestId = req.guestId;
+  // Determine contact email:
+  // - Logged-in user: use user.email
+  // - Guest: must provide contactEmail in body
+  const contactEmail = req.user ? req.user.email : req.body.contactEmail;
 
-  // Required fields check
-  if (!req.body.contactEmail || !req.body.shippingAddress) {
+  if (!contactEmail || !req.body.shippingAddress) {
     return next(
       new ApiError("Contact details and shipping address are required", 400)
     );
   }
 
-  // 1) Get cart by cartId AND guestId (security)
+  // 1) Get cart by cartId
   const cart = await CartModel.findOne({
     _id: req.params.cartId,
   });
@@ -36,11 +38,12 @@ export const createCashOrder = asyncHandler(async (req, res, next) => {
 
   const totalOrderPrice = orderPrice + taxPrice + shippingPrice;
 
-  // 3) Create order
+  // 3) Create order (for guest or logged-in user)
   const order = await OrderModel.create({
-    guestId,
+    guestId: cart.guestId,
+    user: cart.user,
     orderItems: cart.cartItems,
-    contactEmail: req.body.contactEmail,
+    contactEmail,
     shippingAddress: req.body.shippingAddress,
     taxPrice,
     shippingPrice,
@@ -73,9 +76,15 @@ export const createCashOrder = asyncHandler(async (req, res, next) => {
 });
 
 export const filterOrders = asyncHandler(async (req, res, next) => {
-  if (req.user && req.user.role === "admin") req.filterObj = {};
-  else if (req.guestId) req.filterObj = { guestId: req.guestId };
-  else req.filterObj = {};
+  if (req.user && req.user.role === "admin") {
+    req.filterObj = {};
+  } else if (req.user) {
+    req.filterObj = { user: req.user._id };
+  } else if (req.guestId) {
+    req.filterObj = { guestId: req.guestId };
+  } else {
+    req.filterObj = {};
+  }
 
   next();
 });
@@ -117,14 +126,20 @@ export const updateOrderToDelivered = asyncHandler(async (req, res, next) => {
 
 // online Payment
 export const checkoutSession = asyncHandler(async (req, res, next) => {
-  const guestId = req.guestId;
-
   const cart = await CartModel.findOne({
     _id: req.params.cartId,
   });
 
   if (!cart) {
     return next(new ApiError("No cart found", 404));
+  }
+
+  // Determine contact email for Stripe session
+  const contactEmail = req.user ? req.user.email : req.body.contactEmail;
+  if (!contactEmail) {
+    return next(
+      new ApiError("Contact email is required to create a payment session", 400)
+    );
   }
 
   // 2) Calculate order price
@@ -155,7 +170,7 @@ export const checkoutSession = asyncHandler(async (req, res, next) => {
     mode: "payment",
     success_url: `${process.env.MY_DOMAIN}/all-orders`,
     cancel_url: `${process.env.MY_DOMAIN}/cart`,
-    customer_email: req.body.contactEmail,
+    customer_email: contactEmail,
     client_reference_id: req.params.cartId,
     metadata: {
       ...req.body.shippingAddress,
@@ -175,6 +190,7 @@ const createCardOrder = async (session) => {
   // create order
   const order = await OrderModel.create({
     guestId: cart.guestId,
+    user: cart.user,
     orderItems: cart.cartItems,
     contactEmail,
     shippingAddress,
