@@ -43,7 +43,9 @@ if (process.env.NODE_ENV === "development") {
     "http://localhost:3000",
     "http://localhost:4200",
     "http://127.0.0.1:3000",
-    "http://127.0.0.1:4200"
+    "http://127.0.0.1:4200",
+    "http://localhost:4000",
+    "http://127.0.0.1:4000"
   );
 }
 
@@ -121,8 +123,8 @@ app.all("/{*splat}", (req, res, next) => {
 app.use(globalErrorHandler);
 
 // Server Activation
-const port = process.env.PORT || 3000; // Define server port (default: 3000)
-const server = app.listen(port, () => {
+const port = process.env.PORT || 4000; // Define server port (default: 3000)
+const server = app.listen(port,'0.0.0.0', () => {
   console.log(`App running on port ${port}`);
 });
 

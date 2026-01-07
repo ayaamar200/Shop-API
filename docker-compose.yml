@@ -1,0 +1,22 @@
+services:
+  api:
+    build: .
+    container_name: electroelhany_api
+    env_file:
+      - .env
+    ports:
+      - "4000:4000"
+    depends_on:
+      - mongo
+    restart: always
+
+  mongo:
+    image: mongo:7
+    container_name: electroelhany_mongo
+    volumes:
+      - mongo_data:/data/db
+    restart: always
+
+volumes:
+  mongo_data:
+  
