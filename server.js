@@ -43,7 +43,13 @@ if (process.env.NODE_ENV === "development") {
     "http://localhost:3000",
     "http://localhost:4200",
     "http://127.0.0.1:3000",
-    "http://127.0.0.1:4200"
+    "http://127.0.0.1:4200",
+    "http://localhost:4000",
+    "http://127.0.0.1:4000",
+    "https://www.electroelhany.store",
+    "http://www.electroelhany.store",
+    "https://electroelhany.store",
+    "http://electroelhany.store"
   );
 }
 
@@ -69,23 +75,28 @@ app.use(
 
       // Origin not allowed
       return callback(
-        new Error(`CORS blocked: ${origin} is not allowed. Configure ALLOWED_ORIGINS in .env`)
+        new Error(
+          `CORS blocked: ${origin} is not allowed. Configure ALLOWED_ORIGINS in .env`
+        )
       );
     },
     credentials: true,
   })
 );
 
-app.options("/{*splat}", cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    return callback(null, false);
-  },
-  credentials: true,
-}));
+app.options(
+  "/{*splat}",
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(null, false);
+    },
+    credentials: true,
+  })
+);
 // compress all responses
 app.use(compression());
 
@@ -121,8 +132,8 @@ app.all("/{*splat}", (req, res, next) => {
 app.use(globalErrorHandler);
 
 // Server Activation
-const port = process.env.PORT || 3000; // Define server port (default: 3000)
-const server = app.listen(port, () => {
+const port = process.env.PORT || 4000; // Define server port (default: 3000)
+const server = app.listen(port, "0.0.0.0", () => {
   console.log(`App running on port ${port}`);
 });
 
