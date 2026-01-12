@@ -16,16 +16,6 @@ echo "🚀 Deploying backend to $SERVER:$BACKEND_REMOTE_DIR ..."
 # Make sure remote folder exists
 ssh $SERVER "mkdir -p $BACKEND_REMOTE_DIR"
 
-# Upload backend files, excluding node_modules, .env, git, logs
-rsync -avz --delete \
-    --exclude node_modules \
-    --exclude .env* \
-    --exclude .git \
-    --exclude docker-compose.override.yml \
-    --exclude /uploads \
-    $LOCAL_BACKEND_DIR/ $SERVER:$BACKEND_REMOTE_DIR/
-
-echo "✅ Backend files uploaded!"
 
 # ------------------------------
 # 2️⃣ Build and restart Docker
